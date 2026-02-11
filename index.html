@@ -49,7 +49,10 @@
           if (slot.dataset.loaded) return;
 
           const md = await loadText(\`./readmes/${name}/README.md\`);
-          slot.innerHTML = md ? marked.parse(md) : "<em>No README synced yet.</em>";
+          slot.innerHTML = md
+  ? `<pre>${md.replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")}</pre>`
+  : "<em>No README synced yet.</em>";
+
           slot.dataset.loaded = "1";
         });
 
