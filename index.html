@@ -20,17 +20,30 @@
   <div id="list">Loading…</div>
 
   <script>
-    const ORG = "alpkit-store";
+  const ORG = "alpkit-store";
 
-    async function loadText(path) {
-      const res = await fetch(path, { cache: "no-store" });
-      if (!res.ok) return null;
-      return res.text();
-    }
+  async function fetchJSON(path) {
+    const res = await fetch(path, { cache: "no-store" });
+    const text = await res.text();
+    if (!res.ok) throw new Error(`${path} → ${res.status}\n${text.slice(0,200)}`);
+    return JSON.parse(text);
+  }
 
-    (async () => {
-      const cfg = await (await fetch("./repos.json", { cache: "no-store" })).json();
-      const list = document.getElementById("list");
+  async function loadText(path) {
+    const res = await fetch(path, { cache: "no-store" });
+    if (!res.ok) return null;
+    return res.text();
+  }
+
+  (async () => {
+    const list = document.getElementById("list");
+    try {
+      // sanity: is marked available?
+      if (typeof marked === "undefined") {
+        throw new Error("marked is undefined (script failed to load).");
+      }
+
+      const cfg = await fetchJSON("./repos.json");
       list.innerHTML = "";
 
       for (const name of cfg.repos) {
@@ -39,8 +52,9 @@
           <summary>${name}</summary>
           <div class="links">
             <a href="https://github.com/${ORG}/${name}" target="_blank" rel="noreferrer">Open repo</a>
+            · <a href="./readmes/${name}/README.md" target="_blank" rel="noreferrer">View synced README.md</a>
           </div>
-          <div class="readme">Loading…</div>
+          <div class="readme"><em>Expand to load README…</em></div>
         `;
 
         d.addEventListener("toggle", async () => {
@@ -48,14 +62,18 @@
           const slot = d.querySelector(".readme");
           if (slot.dataset.loaded) return;
 
-          const md = await loadText(\`./readmes/${name}/README.md\`);
-          slot.innerHTML = md ? marked.parse(md) : "<em>No README synced yet.</em>";
+          const md = await loadText(`./readmes/${name}/README.md`);
+          slot.innerHTML = md ? marked.parse(md) : `<em>No README at readmes/${name}/README.md</em>`;
           slot.dataset.loaded = "1";
         });
 
         list.appendChild(d);
       }
-    })();
-  </script>
+    } catch (err) {
+      list.innerHTML = `<pre style="white-space:pre-wrap">${err.message}</pre>`;
+    }
+  })();
+</script>
+
 </body>
 </html>
