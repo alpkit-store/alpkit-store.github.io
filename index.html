@@ -13,7 +13,7 @@
     pre { overflow: auto; padding: 0.75rem; background: #f6f8fa; border-radius: 10px; }
     code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="./assets/marked.min.js"></script>
 </head>
 <body>
   <h1>Selected Repos</h1>
@@ -49,10 +49,7 @@
           if (slot.dataset.loaded) return;
 
           const md = await loadText(\`./readmes/${name}/README.md\`);
-          slot.innerHTML = md
-  ? `<pre>${md.replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")}</pre>`
-  : "<em>No README synced yet.</em>";
-
+          slot.innerHTML = md ? marked.parse(md) : "<em>No README synced yet.</em>";
           slot.dataset.loaded = "1";
         });
 
