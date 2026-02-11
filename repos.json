@@ -1,0 +1,11 @@
+{
+  "repos": [
+    "alpkit",
+    "amazon-inventory-upload-tool",
+    "kc-order-import-tool",
+    "member-rewards-update-tool",
+    "shiptheory-csv-import",
+    "shopify-cart-validation-app",
+    "shopify-to-kc-price-changes-tool"
+  ]
+}

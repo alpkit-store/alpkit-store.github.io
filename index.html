@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Alpkit Store · Repos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
+    details { border: 1px solid #ddd; border-radius: 12px; padding: 0.75rem 1rem; margin: 0.75rem 0; }
+    summary { cursor: pointer; font-weight: 650; }
+    .links { margin-top: 0.35rem; font-size: 0.95rem; opacity: 0.9; }
+    .readme { margin-top: 0.75rem; }
+    pre { overflow: auto; padding: 0.75rem; background: #f6f8fa; border-radius: 10px; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+  <h1>Selected Repos</h1>
+  <div id="list">Loading…</div>
+
+  <script>
+    const ORG = "alpkit-store";
+
+    async function loadText(path) {
+      const res = await fetch(path, { cache: "no-store" });
+      if (!res.ok) return null;
+      return res.text();
+    }
+
+    (async () => {
+      const cfg = await (await fetch("./repos.json", { cache: "no-store" })).json();
+      const list = document.getElementById("list");
+      list.innerHTML = "";
+
+      for (const name of cfg.repos) {
+        const d = document.createElement("details");
+        d.innerHTML = `
+          <summary>${name}</summary>
+          <div class="links">
+            <a href="https://github.com/${ORG}/${name}" target="_blank" rel="noreferrer">Open repo</a>
+          </div>
+          <div class="readme">Loading…</div>
+        `;
+
+        d.addEventListener("toggle", async () => {
+          if (!d.open) return;
+          const slot = d.querySelector(".readme");
+          if (slot.dataset.loaded) return;
+
+          const md = await loadText(\`./readmes/${name}/README.md\`);
+          slot.innerHTML = md ? marked.parse(md) : "<em>No README synced yet.</em>";
+          slot.dataset.loaded = "1";
+        });
+
+        list.appendChild(d);
+      }
+    })();
+  </script>
+</body>
+</html>
