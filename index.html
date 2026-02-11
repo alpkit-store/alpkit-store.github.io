@@ -20,60 +20,96 @@
   <div id="list">Loading…</div>
 
   <script>
-  const ORG = "alpkit-store";
+  (function () {
+    var ORG = "alpkit-store";
 
-  async function fetchJSON(path) {
-    const res = await fetch(path, { cache: "no-store" });
-    const text = await res.text();
-    if (!res.ok) throw new Error(`${path} → ${res.status}\n${text.slice(0,200)}`);
-    return JSON.parse(text);
-  }
+    function fetchJSON(path) {
+      return fetch(path, { cache: "no-store" }).then(function (res) {
+        return res.text().then(function (text) {
+          if (!res.ok) throw new Error(path + " -> " + res.status + "\n" + text.slice(0, 200));
+          return JSON.parse(text);
+        });
+      });
+    }
 
-  async function loadText(path) {
-    const res = await fetch(path, { cache: "no-store" });
-    if (!res.ok) return null;
-    return res.text();
-  }
+    function loadText(path) {
+      return fetch(path, { cache: "no-store" }).then(function (res) {
+        if (!res.ok) return null;
+        return res.text();
+      });
+    }
 
-  (async () => {
-    const list = document.getElementById("list");
-    try {
-      // sanity: is marked available?
-      if (typeof marked === "undefined") {
-        throw new Error("marked is undefined (script failed to load).");
-      }
+    var list = document.getElementById("list");
+    list.textContent = "Loading…";
 
-      const cfg = await fetchJSON("./repos.json");
+    // sanity: confirm marked is available
+    if (typeof window.marked === "undefined") {
+      list.innerHTML = "<pre>marked is undefined (script failed to load)</pre>";
+      return;
+    }
+
+    fetchJSON("./repos.json").then(function (cfg) {
       list.innerHTML = "";
 
-      for (const name of cfg.repos) {
-        const d = document.createElement("details");
-        d.innerHTML = `
-          <summary>${name}</summary>
-          <div class="links">
-            <a href="https://github.com/${ORG}/${name}" target="_blank" rel="noreferrer">Open repo</a>
-            · <a href="./readmes/${name}/README.md" target="_blank" rel="noreferrer">View synced README.md</a>
-          </div>
-          <div class="readme"><em>Expand to load README…</em></div>
-        `;
+      if (!cfg.repos || !cfg.repos.length) {
+        list.innerHTML = "<em>No repos listed in repos.json</em>";
+        return;
+      }
 
-        d.addEventListener("toggle", async () => {
+      cfg.repos.forEach(function (name) {
+        var d = document.createElement("details");
+
+        var summary = document.createElement("summary");
+        summary.textContent = name;
+        d.appendChild(summary);
+
+        var links = document.createElement("div");
+        links.className = "links";
+
+        var aRepo = document.createElement("a");
+        aRepo.href = "https://github.com/" + ORG + "/" + name;
+        aRepo.target = "_blank";
+        aRepo.rel = "noreferrer";
+        aRepo.textContent = "Open repo";
+
+        var sep = document.createTextNode(" · ");
+
+        var aMd = document.createElement("a");
+        aMd.href = "./readmes/" + name + "/README.md";
+        aMd.target = "_blank";
+        aMd.rel = "noreferrer";
+        aMd.textContent = "View synced README.md";
+
+        links.appendChild(aRepo);
+        links.appendChild(sep);
+        links.appendChild(aMd);
+        d.appendChild(links);
+
+        var readme = document.createElement("div");
+        readme.className = "readme";
+        readme.innerHTML = "<em>Expand to load README…</em>";
+        d.appendChild(readme);
+
+        d.addEventListener("toggle", function () {
           if (!d.open) return;
-          const slot = d.querySelector(".readme");
-          if (slot.dataset.loaded) return;
+          if (readme.dataset.loaded) return;
 
-          const md = await loadText(`./readmes/${name}/README.md`);
-          slot.innerHTML = md ? marked.parse(md) : `<em>No README at readmes/${name}/README.md</em>`;
-          slot.dataset.loaded = "1";
+          loadText("./readmes/" + name + "/README.md").then(function (md) {
+            readme.innerHTML = md ? window.marked.parse(md) : "<em>No README synced yet.</em>";
+            readme.dataset.loaded = "1";
+          }).catch(function (err) {
+            readme.innerHTML = "<pre>" + String(err.message || err) + "</pre>";
+          });
         });
 
         list.appendChild(d);
-      }
-    } catch (err) {
-      list.innerHTML = `<pre style="white-space:pre-wrap">${err.message}</pre>`;
-    }
+      });
+    }).catch(function (err) {
+      list.innerHTML = "<pre style='white-space:pre-wrap'>" + String(err.message || err) + "</pre>";
+    });
   })();
 </script>
+
 
 </body>
 </html>
