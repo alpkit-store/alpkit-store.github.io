@@ -1,6 +1,5 @@
 {
   "repos": [
-    "alpkit",
     "amazon-inventory-upload-tool",
     "kc-order-import-tool",
     "member-rewards-update-tool",
