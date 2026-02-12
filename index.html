@@ -4,112 +4,244 @@
   <meta charset="utf-8" />
   <title>Alpkit Store · Repos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    body { font-family: system-ui, sans-serif; max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
-    details { border: 1px solid #ddd; border-radius: 12px; padding: 0.75rem 1rem; margin: 0.75rem 0; }
-    summary { cursor: pointer; font-weight: 650; }
-    .links { margin-top: 0.35rem; font-size: 0.95rem; opacity: 0.9; }
-    .readme { margin-top: 0.75rem; }
-    pre { overflow: auto; padding: 0.75rem; background: #f6f8fa; border-radius: 10px; }
-    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
-  </style>
+  <link rel="stylesheet" href="./styles.css" />
   <script src="./assets/marked.min.js"></script>
 </head>
 <body>
-  <h1>Selected Repos</h1>
-  <div id="list">Loading…</div>
+  <div class="container">
+    <div class="topbar">
+      <div class="brand">
+        <img src="./assets/logo.png" alt="Alpkit" />
+        <div class="title">
+          <strong>Alpkit Store</strong>
+          <span>Selected repos & public READMEs</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="status" id="status"></div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="search">
+        <input id="q" type="search" placeholder="Filter repos…" autocomplete="off" />
+      </div>
+      <div class="hint" id="hint"></div>
+    </div>
+
+    <div id="list" class="list">Loading…</div>
+
+    <div class="footer">
+      READMEs are synced from private repos via GitHub Actions.
+      <span class="muted">If you’re missing one, check the repo name in <code>repos.json</code> and whether the sync job ran.</span>
+    </div>
+  </div>
 
   <script>
-  (function () {
-    var ORG = "alpkit-store";
+    (function () {
+      var ORG = "alpkit-store";
+      var LIST = document.getElementById("list");
+      var STATUS = document.getElementById("status");
+      var Q = document.getElementById("q");
+      var HINT = document.getElementById("hint");
 
-    function fetchJSON(path) {
-      return fetch(path, { cache: "no-store" }).then(function (res) {
-        return res.text().then(function (text) {
-          if (!res.ok) throw new Error(path + " -> " + res.status + "\n" + text.slice(0, 200));
-          return JSON.parse(text);
+      function fetchJSON(path) {
+        return fetch(path, { cache: "no-store" }).then(function (res) {
+          return res.text().then(function (text) {
+            if (!res.ok) throw new Error(path + " -> " + res.status + "\n" + text.slice(0, 300));
+            return JSON.parse(text);
+          });
         });
-      });
-    }
+      }
 
-    function loadText(path) {
-      return fetch(path, { cache: "no-store" }).then(function (res) {
-        if (!res.ok) return null;
-        return res.text();
-      });
-    }
+      function fetchText(path) {
+        return fetch(path, { cache: "no-store" }).then(function (res) {
+          if (!res.ok) return null;
+          return res.text();
+        });
+      }
 
-    var list = document.getElementById("list");
-    list.textContent = "Loading…";
+      function headOK(path) {
+        return fetch(path, { method: "HEAD", cache: "no-store" })
+          .then(function (res) { return res.ok; })
+          .catch(function () { return false; });
+      }
 
-    // sanity: confirm marked is available
-    if (typeof window.marked === "undefined") {
-      list.innerHTML = "<pre>marked is undefined (script failed to load)</pre>";
-      return;
-    }
+      // Best-effort "last updated" from Last-Modified header
+      function fetchLastModified(path) {
+        return fetch(path, { method: "HEAD", cache: "no-store" }).then(function (res) {
+          if (!res.ok) return null;
+          var lm = res.headers.get("last-modified");
+          return lm ? new Date(lm) : null;
+        }).catch(function () {
+          return null;
+        });
+      }
 
-    fetchJSON("./repos.json").then(function (cfg) {
-      list.innerHTML = "";
+      // Basic HTML sanitization (not as strong as DOMPurify, but helps)
+      function sanitizeHTML(html) {
+        try {
+          var doc = new DOMParser().parseFromString(html, "text/html");
 
-      if (!cfg.repos || !cfg.repos.length) {
-        list.innerHTML = "<em>No repos listed in repos.json</em>";
+          Array.prototype.slice.call(doc.querySelectorAll("script")).forEach(function (n) {
+            n.parentNode.removeChild(n);
+          });
+
+          Array.prototype.slice.call(doc.querySelectorAll("*")).forEach(function (el) {
+            Array.prototype.slice.call(el.attributes || []).forEach(function (attr) {
+              var name = (attr.name || "").toLowerCase();
+              var value = (attr.value || "").trim();
+
+              if (name.startsWith("on")) el.removeAttribute(attr.name);
+              if ((name === "href" || name === "src") && /^javascript:/i.test(value)) el.removeAttribute(attr.name);
+            });
+          });
+
+          return doc.body.innerHTML || "";
+        } catch (e) {
+          return "";
+        }
+      }
+
+      function renderError(err) {
+        LIST.innerHTML = "<pre class='error'>" + String(err && err.message ? err.message : err) + "</pre>";
+      }
+
+      function setStatus(total, shown) {
+        STATUS.textContent = "Showing " + shown + " of " + total;
+      }
+
+      if (typeof window.marked === "undefined") {
+        renderError("marked is undefined (script failed to load)");
         return;
       }
 
-      cfg.repos.forEach(function (name) {
-        var d = document.createElement("details");
+      try {
+        window.marked.setOptions({ mangle: false, headerIds: false });
+      } catch (e) {}
 
-        var summary = document.createElement("summary");
-        summary.textContent = name;
-        d.appendChild(summary);
+      LIST.textContent = "Loading…";
 
-        var links = document.createElement("div");
-        links.className = "links";
+      fetchJSON("./repos.json").then(function (cfg) {
+        var repos = (cfg && cfg.repos) ? cfg.repos.slice() : [];
+        if (!repos.length) {
+          LIST.innerHTML = "<em>No repos listed in repos.json</em>";
+          setStatus(0, 0);
+          return;
+        }
 
-        var aRepo = document.createElement("a");
-        aRepo.href = "https://github.com/" + ORG + "/" + name;
-        aRepo.target = "_blank";
-        aRepo.rel = "noreferrer";
-        aRepo.textContent = "Open repo";
-
-        var sep = document.createTextNode(" · ");
-
-        var aMd = document.createElement("a");
-        aMd.href = "./readmes/" + name + "/README.md";
-        aMd.target = "_blank";
-        aMd.rel = "noreferrer";
-        aMd.textContent = "View synced README.md";
-
-        links.appendChild(aRepo);
-        links.appendChild(sep);
-        links.appendChild(aMd);
-        d.appendChild(links);
-
-        var readme = document.createElement("div");
-        readme.className = "readme";
-        readme.innerHTML = "<em>Expand to load README…</em>";
-        d.appendChild(readme);
-
-        d.addEventListener("toggle", function () {
-          if (!d.open) return;
-          if (readme.dataset.loaded) return;
-
-          loadText("./readmes/" + name + "/README.md").then(function (md) {
-            readme.innerHTML = md ? window.marked.parse(md) : "<em>No README synced yet.</em>";
-            readme.dataset.loaded = "1";
-          }).catch(function (err) {
-            readme.innerHTML = "<pre>" + String(err.message || err) + "</pre>";
+        var checks = repos.map(function (name) {
+          var readmePath = "./readmes/" + name + "/README.md";
+          return headOK(readmePath).then(function (ok) {
+            return { name: name, readmePath: readmePath, exists: ok };
           });
         });
 
-        list.appendChild(d);
-      });
-    }).catch(function (err) {
-      list.innerHTML = "<pre style='white-space:pre-wrap'>" + String(err.message || err) + "</pre>";
-    });
-  })();
-</script>
+        Promise.all(checks).then(function (results) {
+          var existing = results.filter(function (r) { return r.exists; });
+          var display = existing.length ? existing : results;
 
+          setStatus(repos.length, display.length);
+          HINT.textContent = existing.length ? "" : "No synced READMEs found yet (showing all repos so you can check names).";
 
+          function buildList(filterText) {
+            var ft = (filterText || "").toLowerCase().trim();
+            LIST.innerHTML = "";
+
+            var filtered = display.filter(function (r) {
+              return !ft || r.name.toLowerCase().indexOf(ft) !== -1;
+            });
+
+            if (!filtered.length) {
+              LIST.innerHTML = "<em>No matches.</em>";
+              return;
+            }
+
+            filtered.forEach(function (r) {
+              var name = r.name;
+              var readmePath = r.readmePath;
+
+              var d = document.createElement("details");
+              d.className = "card";
+
+              var summary = document.createElement("summary");
+              summary.textContent = name;
+              d.appendChild(summary);
+
+              var links = document.createElement("div");
+              links.className = "links";
+
+              var aRepo = document.createElement("a");
+              aRepo.href = "https://github.com/" + ORG + "/" + name;
+              aRepo.target = "_blank";
+              aRepo.rel = "noreferrer";
+              aRepo.textContent = "Open repo";
+
+              var aMd = document.createElement("a");
+              aMd.href = readmePath;
+              aMd.target = "_blank";
+              aMd.rel = "noreferrer";
+              aMd.textContent = "View synced README.md";
+
+              var badge = document.createElement("span");
+              badge.className = "badge";
+              badge.textContent = "Last updated: …";
+
+              links.appendChild(aRepo);
+              links.appendChild(document.createTextNode(" · "));
+              links.appendChild(aMd);
+              links.appendChild(document.createTextNode(" · "));
+              links.appendChild(badge);
+              d.appendChild(links);
+
+              var readme = document.createElement("div");
+              readme.className = "readme";
+              readme.innerHTML = "<em>Expand to load README…</em>";
+              d.appendChild(readme);
+
+              fetchLastModified(readmePath).then(function (dt) {
+                badge.textContent = dt ? ("Last updated: " + dt.toLocaleString()) : "Last updated: unknown";
+              });
+
+              d.addEventListener("toggle", function () {
+                if (!d.open) return;
+                if (readme.dataset.loaded) return;
+
+                readme.innerHTML = "<em>Loading…</em>";
+
+                fetchText(readmePath).then(function (md) {
+                  if (!md) {
+                    readme.innerHTML = "<em>No README at " + readmePath + "</em>";
+                    readme.dataset.loaded = "1";
+                    return;
+                  }
+
+                  var html = window.marked.parse(md);
+                  var safe = sanitizeHTML(html);
+
+                  if (!safe) {
+                    // Fallback to plain text
+                    readme.innerHTML = "<pre></pre>";
+                    readme.querySelector("pre").textContent = md;
+                  } else {
+                    readme.innerHTML = safe;
+                  }
+
+                  readme.dataset.loaded = "1";
+                }).catch(function (err) {
+                  readme.innerHTML = "<pre class='error'>" + String(err && err.message ? err.message : err) + "</pre>";
+                });
+              });
+
+              LIST.appendChild(d);
+            });
+          }
+
+          buildList("");
+          Q.addEventListener("input", function () { buildList(Q.value); });
+        }).catch(renderError);
+      }).catch(renderError);
+    })();
+  </script>
 </body>
 </html>

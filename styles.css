@@ -1,0 +1,236 @@
+:root {
+  color-scheme: light;
+  --max: 1040px;
+  --bg: #ffffff;
+  --text: #111827;
+  --muted: rgba(17, 24, 39, 0.72);
+  --border: #e5e7eb;
+  --panel: #ffffff;
+  --chip-bg: #f9fafb;
+  --code-bg: #f6f8fa;
+  --shadow: 0 1px 2px rgba(0,0,0,.04);
+  --radius: 14px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  background: var(--bg);
+  color: var(--text);
+}
+
+.container {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 1.5rem 1rem 2.5rem;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0 0.75rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: .9rem;
+  min-width: 240px;
+}
+
+.brand img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+}
+
+.brand .title {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.brand .title strong {
+  font-size: 1.05rem;
+  letter-spacing: 0.2px;
+}
+
+.brand .title span {
+  font-size: 0.92rem;
+  color: var(--muted);
+  margin-top: .15rem;
+}
+
+.header-right {
+  margin-left: auto;
+  text-align: right;
+}
+
+.status {
+  font-size: .95rem;
+  color: var(--muted);
+}
+
+.toolbar {
+  display: flex;
+  gap: .75rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 0.75rem 0 1.25rem;
+}
+
+.search {
+  flex: 1;
+  min-width: 260px;
+  max-width: 520px;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .55rem .75rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.search input[type="search"] {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 1rem;
+  background: transparent;
+  color: var(--text);
+}
+
+.hint {
+  font-size: .95rem;
+  color: var(--muted);
+}
+
+.list {
+  margin-top: .25rem;
+}
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.9rem 1rem;
+  margin: 0.85rem 0;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.card summary {
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1.05rem;
+  list-style: none;
+}
+
+.card summary::-webkit-details-marker {
+  display: none;
+}
+
+.card summary::after {
+  content: "▾";
+  float: right;
+  color: var(--muted);
+}
+
+.card[open] summary::after {
+  content: "▴";
+}
+
+.links {
+  margin-top: 0.45rem;
+  font-size: 0.95rem;
+  color: var(--muted);
+  display: flex;
+  gap: .75rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.links a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px dotted rgba(17,24,39,.35);
+}
+
+.links a:hover {
+  color: var(--text);
+  border-bottom-color: rgba(17,24,39,.7);
+}
+
+.badge {
+  display: inline-block;
+  padding: .18rem .55rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--chip-bg);
+  font-size: .85rem;
+  color: var(--muted);
+}
+
+.readme {
+  margin-top: 0.85rem;
+}
+
+.readme em {
+  color: var(--muted);
+}
+
+/* Rendered markdown */
+.readme h1, .readme h2, .readme h3 {
+  margin: 1.1rem 0 0.5rem;
+}
+
+.readme p, .readme li {
+  line-height: 1.55;
+}
+
+.readme ul, .readme ol {
+  padding-left: 1.25rem;
+}
+
+.readme blockquote {
+  border-left: 3px solid var(--border);
+  margin: 1rem 0;
+  padding: .25rem 0 .25rem .9rem;
+  color: var(--muted);
+}
+
+pre {
+  overflow: auto;
+  padding: 0.85rem;
+  background: var(--code-bg);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.95em;
+}
+
+.error {
+  white-space: pre-wrap;
+}
+
+.footer {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.footer a {
+  color: inherit;
+}
