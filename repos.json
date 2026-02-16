@@ -6,6 +6,7 @@
     "shiptheory-csv-import",
     "shopify-cart-validation-app",
     "shopify-product-image-browser",
-    "shopify-to-kc-price-changes-tool"
+    "shopify-to-kc-price-changes-tool",
+    "stuck-order-import-tool"
   ]
 }
