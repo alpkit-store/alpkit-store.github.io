@@ -41,9 +41,15 @@ The Orders Import Tool provides a user-friendly interface to:
 2. **Enter order numbers**: Paste order numbers in the text box (one per line). The `#` prefix is optional
 3. **Select source folder**: Click "Browse..." next to "Source folder" and select the folder containing XML files
 4. **Specify output folder**: Click "Browse..." next to "Output subfolder" and select where copied files should go
-5. **Find and copy**: Click the "Find and Copy" button
+5. **Find and copy**: Click the "Find and Copy" button to search for matching orders and copy them
 6. **Review results**: The results panel shows which orders were found and which weren't
 7. **Confirm copy**: A dialog will ask for confirmation before copying matched files
+
+## Buttons
+
+- **Find and Copy** (blue): Searches for order numbers in XML files and copies matched files to the output folder
+- **Open Folder** (gray): Opens the output folder in Windows Explorer for quick access to copied files
+- **Delete .cmp Files** (red): Removes all `.cmp` files from the output folder with confirmation
 
 ## Configuration
 
