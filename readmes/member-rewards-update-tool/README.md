@@ -57,6 +57,7 @@ chmod 755 input output logs cache
 | `klaviyo.enabled` | Set to `false` to skip Klaviyo comparison and write all rows to CSV |
 | `klaviyo.fetch_mode` | `segment` — fetch only active profiles from a segment (default); `all` — fetch all profiles |
 | `klaviyo.segment_id` | Klaviyo segment ID used when `fetch_mode` is `segment` (default: `XVnnDX` — ActiveProfiles) |
+| `klaviyo.suppressed_segment_id` | Klaviyo segment ID used when the `--suppressed` flag is passed (default: `SJPRME` — Suppressed contacts) |
 | `klaviyo.cache_dir` | Directory where the fetched profile index is cached |
 | `klaviyo.cache_ttl` | Seconds before the cache is considered stale and re-fetched (default: `86400` — 24 hours) |
 
@@ -94,13 +95,14 @@ The following CSV files must be in place before running (paths configured in `co
 ## Usage
 
 ```bash
-php process.php [--all|--segment] [--dry-run] [--refresh-cache]
+php process.php [--all|--segment|--suppressed] [--dry-run] [--refresh-cache]
 ```
 
 | Flag | Description |
 |------|-------------|
 | *(none)* | Use the `fetch_mode` set in `config/config.php` |
-| `--segment` | Override: fetch only active profiles from the configured segment |
+| `--segment` | Override: fetch only active profiles from the configured segment (`klaviyo.segment_id`) |
+| `--suppressed` | Fetch profiles from the suppressed contacts segment (`klaviyo.suppressed_segment_id`) instead of the default segment |
 | `--all` | Override: fetch all Klaviyo profiles |
 | `--dry-run` | Enable upload dry-run mode — processes and writes output files normally, but skips the Klaviyo API upload |
 | `--refresh-cache` | Delete the cached profile index and force a fresh fetch from the Klaviyo API |
@@ -139,9 +141,10 @@ Each output file can optionally be copied to a secondary location by setting the
 
 The fetched Klaviyo profile index is saved to `cache/` and reused for 24 hours (configurable via `klaviyo.cache_ttl`). This avoids a lengthy API fetch on every run.
 
-Cache files are named by fetch mode:
-- `cache/klaviyo_segment_XVnnDX.json` — segment fetch
-- `cache/klaviyo_all.json` — full profile fetch
+Cache files are named by fetch mode and segment, so different modes do not share or overwrite each other's cache:
+- `cache/klaviyo_segment_XVnnDX.json` — default segment fetch (`--segment`)
+- `cache/klaviyo_segment_SJPRME.json` — suppressed contacts fetch (`--suppressed`)
+- `cache/klaviyo_all.json` — full profile fetch (`--all`)
 
 The cache directory is excluded from version control.
 
@@ -155,8 +158,10 @@ Execution logs are written to `logs/process.log`. Each run appends a timestamped
 
 ## Cron Example
 
-To run daily at 6am with healthchecks.io monitoring:
+To run daily at 6am:
 
 ```
-0 6 * * * /usr/bin/php /var/www/alpkit/member-rewards-update-tool/process.php >> /dev/null 2>&1
+0 6 * * * ea-php82 -q /home/kennysto/discount-processor-optimized/process.php 2>> /home/kennysto/discount-processor-optimized/logs/process.log
 ```
+
+The `2>>` redirect appends PHP's own stderr output (fatal errors that bypass the script's error handler) to the same log file used by the script. This ensures nothing is silently discarded if the process is killed unexpectedly.
