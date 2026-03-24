@@ -10,8 +10,8 @@ This tool reads a Matrixify Excel export containing Shopify orders (web, POS, an
 
 1. **Load** - Read the Matrixify Excel export into a pandas DataFrame
 2. **Group** - Organise rows by Order ID (each order spans multiple rows for line items, transactions, shipping lines, and discounts)
-3. **Filter** - Apply include/exclude rules based on source channel, physical location, and web tags
-4. **Validate** - Skip orders without successful payment transactions (status=success, kind=capture/sale)
+3. **Filter** - Apply include/exclude rules based on source channel, physical location, web tags, and configurable finance hold tags
+4. **Validate** - Skip orders without successful payment transactions (status=success, usually kind=capture/sale, with configurable exceptions such as Cycle to Work authorisations)
 5. **Transform** - Map Shopify fields to the Khaos Control schema
 6. **Export** - Write formatted XML output
 
@@ -65,8 +65,16 @@ The JSON config drives all filtering, mapping, and default value logic.
 | `web_location_tags`              | Shopify tags used to route web orders to specific sites              |
 | `web_location_tag_site_map`      | Map web location tags to SITE values                                 |
 | `web_exclude_tags`               | Tags that cause web orders to be skipped                             |
+| `finance_hold_tags`              | Tags that cause any matching order to be held back from export       |
 | `pos_site_defaults`              | Per-store default contact/address info for POS orders                |
 | `shipping_method_map`            | Map Shopify shipping method titles to COURIER_DESC values            |
+| `company_class_by_currency`      | Map order currency to Khaos Control company class                    |
+| `cycle_to_work_gateways`         | Gateway names used to classify Cycle to Work orders                  |
+| `cycle_to_work_invoice_priority` | Priority label used for Cycle to Work orders                         |
+| `note_invoice_priority`          | Priority label used when customer notes are present                  |
+| `pos_invoice_priority`           | Priority label used for POS / collection orders, typically `Standard` |
+| `standard_invoice_priority`      | Fallback priority label for standard orders                          |
+| `pos_force_zero_shipping`        | Force POS orders to export zero shipping totals                      |
 | `payment_mappings`               | Rules matching (source, location, currency, gateway) to payment accounts |
 | `source_name_overrides`          | Marketplace-specific overrides (e.g. Debenhams, Decathlon)           |
 | `account_name_aliases`           | Normalise account names across channels                              |
@@ -77,6 +85,12 @@ The JSON config drives all filtering, mapping, and default value logic.
 
 **Web Orders:** Shopify order tags are checked against `web_location_tags`. A single matching tag routes to the corresponding site. Orders with multiple location tags are skipped if `skip_web_if_multiple_location_tags` is enabled.
 
+**Finance Holds:** Orders carrying any tag listed in `finance_hold_tags` are excluded from the export.
+
+### Company Class Mapping
+
+`COMPANY_CLASS` defaults to `defaults.COMPANY_CLASS`, but can be overridden per currency using `company_class_by_currency`.
+
 ### Payment Mapping
 
 Payments are matched using a cascade:
@@ -84,6 +98,22 @@ Payments are matched using a cascade:
 1. **Source name overrides** - Marketplace-specific accounts (highest priority)
 2. **Payment mappings table** - Match by (source, location, currency, gateway) with exact location preferred, wildcard (empty location) as fallback
 3. **Config defaults** - Last resort
+
+Cycle to Work orders are identified from `cycle_to_work_gateways` and may be exported from successful `authorization` transactions even when no `capture` or `sale` exists.
+
+### Priority Resolution
+
+`INV_PRIORITY` is resolved in this order:
+
+1. Cycle to Work priority
+2. Note-based priority
+3. POS / collection priority
+4. Store Shipping for web orders routed to a store site
+5. Standard priority
+
+### POS Shipping Behaviour
+
+When `pos_force_zero_shipping` is enabled, POS orders always export `DELIVERY_GRS=0`, `DELIVERY_TAX=0`, and use the configured collection courier label instead of any shipping-line-derived value.
 
 ## Output Format
 
