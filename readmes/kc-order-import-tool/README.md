@@ -30,7 +30,7 @@ pip install pandas openpyxl
 ## Usage
 
 ```
-python matrixify_to_khaos.py --input "Matrixify Export.xlsx" --config "khaos_mapping.json" --output "khaos_orders.xml" --bike-lookup "Matrixify Bike Lookup.xlsx"
+python matrixify_to_khaos.py --input "Matrixify Export.xlsx" --config "khaos_mapping.json" --output "khaos_orders.xml" --bike-lookup "Matrixify Bike Lookup.xlsx" --variant-sku-lookup "Matrixify Export Variant to SKU.xlsx"
 ```
 
 | Argument | Description |
@@ -39,10 +39,11 @@ python matrixify_to_khaos.py --input "Matrixify Export.xlsx" --config "khaos_map
 | `--config` | Path to the JSON mapping configuration |
 | `--output` | Path for the generated XML output |
 | `--bike-lookup` | Path to the Matrixify product export used to expand Bike Build pack items. Defaults to `Matrixify Bike Lookup.xlsx` |
+| `--variant-sku-lookup` | Path to the Matrixify product export used to map `_bundleProduct_<VariantID>` bike properties back to SKUs. Defaults to `Matrixify Export Variant to SKU.xlsx` |
 
 The script prints a processing summary on completion, showing counts of orders processed, filtered, exported, and a breakdown by site.
 
-Download a fresh Bike Lookup workbook each time an import is run so Bike Build component packs reflect the latest product tag data.
+Download fresh Bike Lookup and Variant-to-SKU lookup workbooks each time an import is run so Bike Build component packs reflect the latest product and variant data.
 
 ## Files
 
@@ -103,7 +104,7 @@ Payments are matched using a cascade:
 2. **Payment mappings table** - Match by (source, location, currency, gateway) with exact location preferred, wildcard (empty location) as fallback
 3. **Config defaults** - Last resort
 
-Cycle to Work orders are identified from `cycle_to_work_gateways` and may be exported from successful `authorization` transactions even when no `capture` or `sale` exists.
+Cycle to Work orders are identified from `cycle_to_work_gateways` and may be exported from successful `authorization` transactions even when no `capture` or `sale` exists. Orders on those gateways are also allowed through even when the transaction is still pending, matching the current voucher workflow; in that case the order is exported with an empty `PAYMENTS` block until a successful payment exists.
 
 ### Priority Resolution
 
@@ -146,4 +147,4 @@ Bundle-specific note: when a line item's `Line: Properties` contains `_bundle_fr
 
 Bundle groups already present in Matrixify rows also receive `PACK_SORT_ORDER` values based on `_bundle_id`, with the bundle parent first and then remaining rows in source order.
 
-Bike Build note: when a bike header SKU is present in the Bike Lookup workbook, the exporter adds pack component `ORDER_ITEM` rows from product tags in the format `BB_<SKU>_<qty>`. The bike header receives `PACK_SORT_ORDER=100.001` and generated component rows follow as `100.002`, `100.003`, and so on.
+Bike Build note: when a bike header SKU is present in the Bike Lookup workbook, the exporter adds pack component `ORDER_ITEM` rows from product tags in the format `BB_<SKU>_<qty>`. It also expands `_bundleProduct_<VariantID>: qty` properties on the bike header using the Variant-to-SKU workbook. The bike header receives `PACK_SORT_ORDER=100.001` and generated component rows follow as `100.002`, `100.003`, and so on.
