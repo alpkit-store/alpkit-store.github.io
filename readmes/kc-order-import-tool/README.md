@@ -30,16 +30,19 @@ pip install pandas openpyxl
 ## Usage
 
 ```
-python matrixify_to_khaos.py --input "Matrixify Export.xlsx" --config "khaos_mapping.json" --output "khaos_orders.xml"
+python matrixify_to_khaos.py --input "Matrixify Export.xlsx" --config "khaos_mapping.json" --output "khaos_orders.xml" --bike-lookup "Matrixify Bike Lookup.xlsx"
 ```
 
-| Argument    | Description                              |
+| Argument | Description |
 |-------------|------------------------------------------|
-| `--input`   | Path to the Matrixify Excel export file  |
-| `--config`  | Path to the JSON mapping configuration   |
-| `--output`  | Path for the generated XML output        |
+| `--input` | Path to the Matrixify Excel export file |
+| `--config` | Path to the JSON mapping configuration |
+| `--output` | Path for the generated XML output |
+| `--bike-lookup` | Path to the Matrixify product export used to expand Bike Build pack items. Defaults to `Matrixify Bike Lookup.xlsx` |
 
 The script prints a processing summary on completion, showing counts of orders processed, filtered, exported, and a breakdown by site.
+
+Download a fresh Bike Lookup workbook each time an import is run so Bike Build component packs reflect the latest product tag data.
 
 ## Files
 
@@ -75,6 +78,7 @@ The JSON config drives all filtering, mapping, and default value logic.
 | `pos_invoice_priority`           | Priority label used for POS / collection orders, typically `Standard` |
 | `standard_invoice_priority`      | Fallback priority label for standard orders                          |
 | `pos_force_zero_shipping`        | Force POS orders to export zero shipping totals                      |
+| `bike_build_invoice_priority`    | Priority label used for Bike Build orders                            |
 | `payment_mappings`               | Rules matching (source, location, currency, gateway) to payment accounts |
 | `source_name_overrides`          | Marketplace-specific overrides (e.g. Debenhams, Decathlon)           |
 | `account_name_aliases`           | Normalise account names across channels                              |
@@ -106,10 +110,11 @@ Cycle to Work orders are identified from `cycle_to_work_gateways` and may be exp
 `INV_PRIORITY` is resolved in this order:
 
 1. Cycle to Work priority
-2. Note-based priority
-3. POS / collection priority
-4. Store Shipping for web orders routed to a store site
-5. Standard priority
+2. Bike Build priority
+3. Note-based priority
+4. POS / collection priority
+5. Store Shipping for web orders routed to a store site
+6. Standard priority
 
 ### POS Shipping Behaviour
 
@@ -136,3 +141,9 @@ Each `SALES_ORDER` contains:
 - **PAYMENTS** - One `PAYMENT_DETAIL` per successful transaction, mapped to the correct account
 - **ORDER_HEADER** - Order date, site, currency, shipping, courier, discount codes, PO number (POS only)
 - **ORDER_ITEMS** - One `ORDER_ITEM` per line item with SKU, quantity, price, and discount percentage
+
+Bundle-specific note: when a line item's `Line: Properties` contains `_bundle_free: true`, the exporter preserves the item's listed price, sets `KSD_DISCOUNT` to `100`, and emits `PRICE_NET=0` to match the current integration behavior.
+
+Bundle groups already present in Matrixify rows also receive `PACK_SORT_ORDER` values based on `_bundle_id`, with the bundle parent first and then remaining rows in source order.
+
+Bike Build note: when a bike header SKU is present in the Bike Lookup workbook, the exporter adds pack component `ORDER_ITEM` rows from product tags in the format `BB_<SKU>_<qty>`. The bike header receives `PACK_SORT_ORDER=100.001` and generated component rows follow as `100.002`, `100.003`, and so on.
