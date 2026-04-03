@@ -1,6 +1,7 @@
 {
   "repos": [
     "amazon-inventory-upload-tool",
+    "clook-ftp-monitor",
     "kc-order-import-tool",
     "klaviyo-shopify-preferences",
     "member-rewards-update-tool",
