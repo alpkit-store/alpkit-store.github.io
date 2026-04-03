@@ -19,13 +19,13 @@ A lightweight dashboard for monitoring FTP uploads on cPanel servers with Pure-F
 ## File Structure
 
 ```
-/home/kennysto/ftpmonitor/
+/home/xxxxxxxx/ftpmonitor/
 ├── ftp_log_parser.py      # Log parser script
 ├── ftp_uploads.json       # Upload data (auto-generated, outside web root)
 ├── parser.log             # Parser execution log
 └── .htpasswd              # (unused - auth handled by PHP sessions)
 
-/home/kennysto/public_html/ftp-monitor/
+/home/xxxxxxxx/public_html/ftp-monitor/
 ├── ftp_dashboard.php      # Web dashboard (PHP session auth required)
 └── ftp_data.php           # Authenticated JSON data endpoint
 ```
@@ -35,15 +35,15 @@ A lightweight dashboard for monitoring FTP uploads on cPanel servers with Pure-F
 ### 1. Create directories
 
 ```bash
-mkdir -p /home/kennysto/ftpmonitor
-mkdir -p /home/kennysto/public_html/ftp-monitor
+mkdir -p /home/xxxxxxxx/ftpmonitor
+mkdir -p /home/xxxxxxxx/public_html/ftp-monitor
 ```
 
 ### 2. Set correct ownership
 
 ```bash
-chown kennysto:kennysto /home/kennysto/ftpmonitor
-chown kennysto:kennysto /home/kennysto/public_html/ftp-monitor
+chown xxxxxxxx:xxxxxxxx /home/xxxxxxxx/ftpmonitor
+chown xxxxxxxx:xxxxxxxx /home/xxxxxxxx/public_html/ftp-monitor
 ```
 
 ### 3. Make `/var/log/messages` readable
@@ -61,32 +61,32 @@ sed -i 's/missingok/missingok\n    create 0644 root root/' /etc/logrotate.d/sysl
 ### 4. Deploy files
 
 Upload to the server:
-- `ftp_log_parser.py` → `/home/kennysto/ftpmonitor/`
-- `ftp_dashboard.php` → `/home/kennysto/public_html/ftp-monitor/`
-- `ftp_data.php` → `/home/kennysto/public_html/ftp-monitor/`
+- `ftp_log_parser.py` → `/home/xxxxxxxx/ftpmonitor/`
+- `ftp_dashboard.php` → `/home/xxxxxxxx/public_html/ftp-monitor/`
+- `ftp_data.php` → `/home/xxxxxxxx/public_html/ftp-monitor/`
 
 ### 5. Run initial parse
 
 ```bash
-python3 /home/kennysto/ftpmonitor/ftp_log_parser.py
+python3 /home/xxxxxxxx/ftpmonitor/ftp_log_parser.py
 ```
 
-### 6. Set up cron job (under kennysto user)
+### 6. Set up cron job (under xxxxxxxx user)
 
 ```bash
-crontab -e -u kennysto
+crontab -e -u xxxxxxxx
 ```
 
 Add:
 
 ```
-*/5 * * * * /usr/bin/python3 /home/kennysto/ftpmonitor/ftp_log_parser.py >> /home/kennysto/ftpmonitor/parser.log 2>&1
+*/5 * * * * /usr/bin/python3 /home/xxxxxxxx/ftpmonitor/ftp_log_parser.py >> /home/xxxxxxxx/ftpmonitor/parser.log 2>&1
 ```
 
 ### 7. Access the dashboard
 
 ```
-https://reporting.alpkit.com/ftp-monitor/ftp_dashboard.php
+https://yourdomain.com/ftp-monitor/ftp_dashboard.php
 ```
 
 Requires an active session from the existing reporting login at `account_login.php`.
@@ -94,20 +94,20 @@ Requires an active session from the existing reporting login at `account_login.p
 ## How It Works
 
 1. **Log Parser**: Reads `/var/log/messages` and extracts Pure-FTPd upload events
-2. **Data Storage**: Stores upload records in JSON at `/home/kennysto/ftpmonitor/ftp_uploads.json` (outside web root, keeps last 1000 records)
+2. **Data Storage**: Stores upload records in JSON at `/home/xxxxxxxx/ftpmonitor/ftp_uploads.json` (outside web root, keeps last 1000 records)
 3. **Data Endpoint**: `ftp_data.php` validates the PHP session then serves the JSON with correct `Last-Modified` headers
 4. **Dashboard**: `ftp_dashboard.php` checks PHP session auth, then fetches data from `ftp_data.php`
-5. **Cron Job**: Runs the parser every 5 minutes under the `kennysto` user
+5. **Cron Job**: Runs the parser every 5 minutes under the `xxxxxxxx` user
 
 ## Configuration
 
 ### Parser
 
-Edit `/home/kennysto/ftpmonitor/ftp_log_parser.py`:
+Edit `/home/xxxxxxxx/ftpmonitor/ftp_log_parser.py`:
 
 ```python
 LOG_FILE = "/var/log/messages"                      # Source log file
-DATA_FILE = "/home/kennysto/ftpmonitor/ftp_uploads.json"  # Output JSON
+DATA_FILE = "/home/xxxxxxxx/ftpmonitor/ftp_uploads.json"  # Output JSON
 MAX_RECORDS = 1000                                  # Records to keep
 ```
 
@@ -144,24 +144,24 @@ setInterval(loadData, 60000);  // milliseconds
 
 3. Check the parser log:
    ```bash
-   cat /home/kennysto/ftpmonitor/parser.log
+   cat /home/xxxxxxxx/ftpmonitor/parser.log
    ```
 
 4. Run the parser manually as the cron user to test:
    ```bash
-   su -s /bin/bash kennysto -c "/usr/bin/python3 /home/kennysto/ftpmonitor/ftp_log_parser.py"
+   su -s /bin/bash xxxxxxxx -c "/usr/bin/python3 /home/xxxxxxxx/ftpmonitor/ftp_log_parser.py"
    ```
 
 ### Dashboard shows "Failed to load data"
 
 1. Check the JSON file exists:
    ```bash
-   ls -la /home/kennysto/ftpmonitor/ftp_uploads.json
+   ls -la /home/xxxxxxxx/ftpmonitor/ftp_uploads.json
    ```
 
-2. Check file permissions (must be readable by kennysto):
+2. Check file permissions (must be readable by xxxxxxxx):
    ```bash
-   chmod 644 /home/kennysto/ftpmonitor/ftp_uploads.json
+   chmod 644 /home/xxxxxxxx/ftpmonitor/ftp_uploads.json
    ```
 
 3. Open browser console (F12) and check for errors
@@ -170,17 +170,17 @@ setInterval(loadData, 60000);  // milliseconds
 
 1. Verify the cron entry:
    ```bash
-   crontab -l -u kennysto
+   crontab -l -u xxxxxxxx
    ```
 
-2. Check directory ownership (kennysto must own ftpmonitor to write parser.log):
+2. Check directory ownership (xxxxxxxx must own ftpmonitor to write parser.log):
    ```bash
-   ls -la /home/kennysto/ | grep ftpmonitor
+   ls -la /home/xxxxxxxx/ | grep ftpmonitor
    ```
 
-3. Test manually as kennysto user:
+3. Test manually as xxxxxxxx user:
    ```bash
-   su -s /bin/bash kennysto -c "/usr/bin/python3 /home/kennysto/ftpmonitor/ftp_log_parser.py"
+   su -s /bin/bash xxxxxxxx -c "/usr/bin/python3 /home/xxxxxxxx/ftpmonitor/ftp_log_parser.py"
    ```
 
 ## Sample Record
@@ -188,9 +188,9 @@ setInterval(loadData, 60000);  // milliseconds
 ```json
 {
   "timestamp": "2026-04-03T11:18:37",
-  "username": "matrixify@alpkit.com",
-  "ip_address": "45.157.40.205",
-  "filepath": "/home/kennysto/public_html/orders/sg/code/jo_custom/matrixify/Orders.csv",
+  "username": "user@example.com",
+  "ip_address": "xxx.xxx.xxx.xxx",
+  "filepath": "/home/xxxxxxxx/public_html/path/to/file.csv",
   "filename": "Orders.csv",
   "bytes": 18677,
   "size_mb": 0.02,
