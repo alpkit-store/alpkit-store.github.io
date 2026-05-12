@@ -36,6 +36,86 @@ Rules:
 
 EU/EEA country codes are: `AT`, `BE`, `BG`, `CY`, `CZ`, `EE`, `FI`, `FR`, `DE`, `GR`, `HR`, `HU`, `IE`, `IS`, `IT`, `LI`, `LV`, `LT`, `LU`, `MT`, `NO`, `NL`, `PL`, `PT`, `RO`, `SK`, `SI`, `ES`, `SE`.
 
+### Activation
+
+This is an extension-only app, so the **Settings → Shipping and delivery → Customizations → Add customization** flow lands on a blank app page. The function has to be activated once per store via the `deliveryCustomizationCreate` mutation. The customization persists across deploys.
+
+The mutation must run authenticated as the cart-validation app (a store's GraphiQL App or unrelated custom app won't work — it'll error with "Function ... not found").
+
+#### Dev stores
+
+Easiest path — the Shopify CLI ships a GraphiQL session authenticated as your app:
+
+1. From `cart-validation/`, run `shopify app dev --store <store>.myshopify.com`
+2. With dev running, press `g` in that terminal to open GraphiQL
+3. Set API version to `2026-04`, then run:
+
+```graphql
+mutation {
+  deliveryCustomizationCreate(deliveryCustomization: {
+    functionHandle: "destination-shipping-restrictions",
+    title: "Destination shipping restrictions",
+    enabled: true
+  }) {
+    deliveryCustomization { id title enabled }
+    userErrors { field message }
+  }
+}
+```
+
+#### Non-dev stores (e.g. prod / Plus stores)
+
+`shopify app dev` only accepts true development stores, so for prod you need an offline access token and have to call the mutation directly.
+
+One-time setup:
+
+1. Add Postman's OAuth callback to `cart-validation/shopify.app.toml` and deploy:
+   ```toml
+   [auth]
+   redirect_urls = [
+     "https://shopify.dev/apps/default-app-home/api/auth",
+     "https://oauth.pstmn.io/v1/callback",
+   ]
+   ```
+   Run `shopify app deploy` and release.
+2. In Postman, create a request, set Authorization → OAuth 2.0:
+   - Auth URL: `https://<store>.myshopify.com/admin/oauth/authorize`
+   - Access Token URL: `https://<store>.myshopify.com/admin/oauth/access_token`
+   - Client ID: from Dev Dashboard → cart-validation → Settings → Credentials
+   - Client Secret: same place (click the eye on Secret)
+   - Scope: `write_delivery_customizations`
+   - Callback URL: `https://oauth.pstmn.io/v1/callback`
+3. Get New Access Token, complete the OAuth flow, copy the resulting `shpat_...` token. It's an offline token — reusable, no expiry under normal use.
+
+Then run the mutation from PowerShell (Shopify Admin API uses the `X-Shopify-Access-Token` header, not OAuth Bearer):
+
+```powershell
+$token = 'shpat_...'
+
+$body = @{
+  query = 'mutation Create($input: DeliveryCustomizationInput!) { deliveryCustomizationCreate(deliveryCustomization: $input) { deliveryCustomization { id title enabled } userErrors { field message } } }'
+  variables = @{
+    input = @{
+      functionHandle = 'destination-shipping-restrictions'
+      title          = 'Destination shipping restrictions'
+      enabled        = $true
+    }
+  }
+} | ConvertTo-Json -Depth 5 -Compress
+
+Invoke-RestMethod `
+  -Uri 'https://<store>.myshopify.com/admin/api/2026-04/graphql.json' `
+  -Method Post `
+  -Headers @{ 'X-Shopify-Access-Token' = $token; 'Content-Type' = 'application/json' } `
+  -Body $body | ConvertTo-Json -Depth 10
+```
+
+Don't paste long JSON literals into the PowerShell terminal — line wrapping breaks the here-string. Build the body via hashtables + `ConvertTo-Json` as above.
+
+#### Verify and manage
+
+Confirm the customization appears as **Active** under **Settings → Shipping and delivery → Customizations**. To disable or delete it later, use `deliveryCustomizationUpdate` / `deliveryCustomizationDelete` via the same channel.
+
 ## Project Structure
 
 ```
