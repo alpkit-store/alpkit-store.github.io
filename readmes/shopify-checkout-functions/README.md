@@ -22,6 +22,30 @@ The extension runs as a serverless function during Shopify's cart transformation
 
 Paid items are always left untouched.
 
+## Bundle Pricing
+
+Replaces the legacy Shopify Script `shopify_scripts_bundle price discount.rb` (Scripts platform deprecated 2026-06-30). Runs in the same `block-free-items` Cart Transform extension as the free-item validator — both share one function because Shopify allows only one Cart Transform Function per app per store.
+
+The `alpkit` theme attaches these line item properties when a bundle is added to cart (`src/scripts/modules/product-bundle.js`):
+
+| Property | Role |
+|---|---|
+| `_bundle_parent` | Marks the bundle header line |
+| `_bundle_free` | Marks a bundle child (gets discounted to £0) |
+| `_bundle_id` | Bundle product variant ID (informational; the function does not use it) |
+| `_bundle_instance_id` | Unique per "add bundle to cart" event — used as the linkage key |
+
+Rules:
+
+| Line state | Result |
+|---|---|
+| `_bundle_free` line with matching parent (same `_bundle_instance_id`) in cart | Price set to £0, title "Bundle item" |
+| `_bundle_free` line with no matching parent (orphan) | Price set to £999.99, title "Bundle parent removed — please re-add bundle" |
+| `_bundle_free` line with no `_bundle_instance_id` at all | Treated as orphan (£999.99) — fails closed |
+| Any other line | Free-item validation rules apply |
+
+Strict pairing on `_bundle_instance_id` (not `_bundle_id`) prevents an abuse vector where customers add two of the same bundle and remove one parent while keeping both child sets free. Bundle handling runs before the free-item branch — a `_bundle_free` line never falls through to the free-item logic.
+
 ## Destination Shipping Restrictions
 
 The delivery customization extension replaces the legacy Shopify Shipping Script that used `hide EU` and `hide INT` product tags.
