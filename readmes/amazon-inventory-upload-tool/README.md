@@ -183,3 +183,15 @@ Reason values: `Buy box suppressed (no featured offer)`, `Not featured-offer eli
 ## Rate limits
 
 `getListingOffersBatch` is throttled to **0.5 req/s** (script paces ~2s/batch); `getFeaturedOfferExpectedPriceBatch` to **0.033 req/s** (one call per ~30s). The FOEP pass only runs on the no-buy-box subset, but on a large catalogue it dominates wall-clock — use `--no-foep` for a fast first look.
+
+The Product Pricing quota is a tiny per-account/app bucket (burst 1) **separate** from the Feeds quota the inventory feed uses — so the two tools don't compete, but **don't run two reports at once**, and give the bucket a minute to refill before re-running an aborted one. A `QuotaExceeded` 429 means the bucket is empty; the script backs off 30s/60s to wait out the refill.
+
+## Resilience on long runs
+
+A full-catalogue run can take ~50–60 min, which is around the LWA token lifetime, so the script is built to survive long runs:
+
+- **Token auto-refresh** — the LWA access token is re-minted once it's >40 min old (it expires at 60 min), before every batch in both passes.
+- **Best-effort FOEP** — a FOEP batch that fails (throttle/expiry/transient) just leaves `foep_target_price` blank for those SKUs; it never aborts the run.
+- **CSV always written** — the report is built from pass-1 data regardless of what pass 2 does, so a late failure can't discard the whole run.
+- **Pass-1 batch failures** are recorded as `error: <message>` rows and the run continues.
+- **Throttle-aware backoff** — 429s back off 30s/60s (matched to the refill), other retriable errors 2s/4s/8s.
