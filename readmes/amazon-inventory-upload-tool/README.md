@@ -144,3 +144,42 @@ The script is preconfigured for the **Amazon UK marketplace** (`A1F83G8C2ARO7P`)
 - **Retries with exponential backoff**: SP-API requests automatically retry up to 3 times on HTTP 429 (throttling) and 5xx (server) errors, with delays of 2s, 4s, and 8s.
 - **Feed polling timeout**: If the feed hasn't completed after 240 polls (1 hour), the script exits with an error.
 - **Empty processing status**: Fails fast rather than polling indefinitely if Amazon returns a blank status.
+
+---
+
+# Buy Box Gap Report (`amazon_buybox_report.php`)
+
+A sibling read-only CLI that lists SKUs **with sellable stock but no featured offer ("buy box")**, with the reason and the price you'd need to win it. It reuses the same `amazon.env`, auth (LWA + SigV4), and retry/backoff helpers as the feed tool.
+
+## What it does
+
+1. Reads `matrixify/amazon_stock.csv` and keeps SKUs with `qty > 0` (your inventory truth — all offers are merchant-fulfilled, no FBA).
+2. **`getListingOffersBatch`** (Product Pricing v0, 20 SKUs/call) — determines whether *your* offer holds the featured offer (`MyOffer` + `IsBuyBoxWinner`), your landed price, the buy-box price, and whether the buy box is suppressed.
+3. For SKUs you don't hold: **`getFeaturedOfferExpectedPriceBatch`** (Product Pricing 2022-05-01, 40 SKUs/call) — the FOEP price at/below which you'd become the featured offer.
+4. Writes `spapi_sync_out/buybox_report_<UTCstamp>.csv`.
+
+## Usage
+
+```bash
+php amazon_buybox_report.php [--limit=N] [--no-foep] [--customer-type=Consumer|Business]
+```
+
+| Flag | Effect |
+|------|--------|
+| `--limit=N` | Only check the first N in-stock SKUs (quick test run). |
+| `--no-foep` | Skip the slow FOEP pass (omits the price-to-win column). |
+| `--customer-type=` | `Consumer` (default) or `Business`. |
+
+Start with `--limit=5` to confirm auth and output before a full run.
+
+## Output columns
+
+`sku, asin, qty, holds_buybox, your_landed_price, buybox_price, foep_target_price, reason`
+
+The CSV contains **only** SKUs without the buy box. A one-line summary (checked / held / without) is written to stderr.
+
+Reason values: `Buy box suppressed (no featured offer)`, `Not featured-offer eligible …`, `Price not competitive (buy box vs your landed price)`, `Lost featured offer (non-price: handling time / metrics)`, `ASIN not eligible …`, or `error: <message>` for per-SKU API failures.
+
+## Rate limits
+
+`getListingOffersBatch` is throttled to **0.5 req/s** (script paces ~2s/batch); `getFeaturedOfferExpectedPriceBatch` to **0.033 req/s** (one call per ~30s). The FOEP pass only runs on the no-buy-box subset, but on a large catalogue it dominates wall-clock — use `--no-foep` for a fast first look.
