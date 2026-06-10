@@ -161,16 +161,30 @@ A sibling read-only CLI that lists SKUs **with sellable stock but no featured of
 ## Usage
 
 ```bash
-php amazon_buybox_report.php [--limit=N] [--no-foep] [--customer-type=Consumer|Business]
+php amazon_buybox_report.php [--limit=N] [--no-foep] [--no-email] [--customer-type=Consumer|Business]
 ```
 
 | Flag | Effect |
 |------|--------|
 | `--limit=N` | Only check the first N in-stock SKUs (quick test run). |
 | `--no-foep` | Skip the slow FOEP pass (omits the price-to-win column). |
+| `--no-email` | Don't email the report even if `REPORT_EMAIL_TO` is set. |
 | `--customer-type=` | `Consumer` (default) or `Business`. |
 
 Start with `--limit=5` to confirm auth and output before a full run.
+
+## Emailing the report
+
+On successful completion the CSV is emailed (as an attachment) if `REPORT_EMAIL_TO` is set in `amazon.env`. Sending uses the server's local MTA via PHP `mail()` — the same deliverable `noreply@alpkit.com` sender pattern as the clook-server notifications — so no SMTP setup is needed.
+
+```env
+# Email the finished report (optional). Comma-separated for multiple recipients.
+REPORT_EMAIL_TO=james@alpkit.com,ops@alpkit.com
+# Optional; defaults to noreply@alpkit.com
+REPORT_EMAIL_FROM=noreply@alpkit.com
+```
+
+Emailing is **best-effort**: if it's unset, skipped (`--no-email`), or `mail()` fails, the run still completes and the report stays on disk — a mail problem never discards a report. Combine with `--limit=5` to test the email path quickly.
 
 ## Output columns
 
