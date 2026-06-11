@@ -33,13 +33,15 @@ for (const repo of repos) {
   } catch {}
 
   let { summary, category, summarizedAt } = existing || {};
-  if (!summary || existing.readmeHash !== readmeHash) {
+  let hashToStore = readmeHash;
+  if (!summary || existing?.readmeHash !== readmeHash) {
     try {
       ({ summary, category } = await generateSummary(repo, readme, modelsToken));
       summarizedAt = new Date().toISOString();
       console.log(`Summarised ${repo.name} (${category})`);
     } catch (err) {
       console.warn(`WARN: summary failed for ${repo.name}: ${err.message}`);
+      hashToStore = existing?.readmeHash ?? null;
       if (!summary) {
         summary = repo.description || "No summary available yet.";
         category = "Utilities";
@@ -57,7 +59,7 @@ for (const repo of repos) {
         description: repo.description,
         pushedAt: repo.pushedAt,
         topics: repo.topics,
-        readmeHash,
+        readmeHash: hashToStore,
         summary,
         category,
         summarizedAt,
@@ -72,8 +74,11 @@ let dataEntries = [];
 try {
   dataEntries = await readdir(DATA, { withFileTypes: true });
 } catch {}
-for (const entry of dataEntries) {
-  if (entry.isDirectory() && !keep.has(entry.name)) {
+const stale = dataEntries.filter((e) => e.isDirectory() && !keep.has(e.name));
+if (keep.size === 0 && stale.length > 0) {
+  console.warn(`WARN: no usable repos in listing but data/ has ${stale.length} entries — skipping prune (check ORG_READ_TOKEN scope)`);
+} else {
+  for (const entry of stale) {
     await rm(`${DATA}/${entry.name}`, { recursive: true });
     console.log(`Removed ${entry.name} (no longer opted in)`);
   }

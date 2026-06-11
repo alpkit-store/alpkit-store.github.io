@@ -18,7 +18,12 @@ const names = entries.filter((d) => d.isDirectory()).map((d) => d.name).sort();
 
 const repos = [];
 for (const name of names) {
-  const meta = JSON.parse(await readFile(`${DATA}/${name}/meta.json`, "utf8"));
+  let meta;
+  try {
+    meta = JSON.parse(await readFile(`${DATA}/${name}/meta.json`, "utf8"));
+  } catch (err) {
+    throw new Error(`Invalid meta.json for ${name}: ${err.message}`);
+  }
   const md = await readFile(`${DATA}/${name}/README.md`, "utf8");
   repos.push({ ...meta, readmeHtml: marked.parse(md) });
 }
