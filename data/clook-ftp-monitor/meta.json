@@ -1,7 +1,7 @@
 {
   "name": "clook-ftp-monitor",
   "description": "A lightweight dashboard for monitoring FTP uploads on cPanel servers with Pure-FTPd",
-  "pushedAt": "2026-04-03T16:01:20Z",
+  "pushedAt": "2026-06-11T09:29:52Z",
   "topics": [
     "public-docs"
   ],
