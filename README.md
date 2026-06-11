@@ -13,7 +13,8 @@ That's it — the nightly build picks it up. Remove the topic to take it down.
 > The AI-generated card summary is instructed to exclude such details, but the full README is shown as-is.
 
 If the repo contains a **`README.public.md`**, that sanitised variant is published instead of the
-default README (same convention as the old push-sync). All ten originally-synced repos have one.
+default README (a convention inherited from the old push-sync; no repo uses it yet, but it's the
+escape hatch when a repo's real README is too sensitive to publish).
 
 ## How it works
 
@@ -38,4 +39,3 @@ Tests: `npm test`.
 | Models auth | The workflow's own `GITHUB_TOKEN` with `models: read` — nothing to renew. |
 | Stale cron | GitHub suspends scheduled workflows after ~60 days without repo activity. A `workflow_dispatch` run re-enables it. |
 | Failures | GitHub emails the repo admins when the workflow fails. A Models outage degrades gracefully to cached/fallback summaries (failed summaries are retried on the next run). |
-| `readmes/` (legacy) | Old push-synced READMEs. ~10 source repos still have push-workflows committing here; once those are removed, delete this folder. |
