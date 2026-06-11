@@ -32,12 +32,26 @@ test("listPublicDocsRepos throws on API error", async () => {
   await assert.rejects(() => listPublicDocsRepos("tok", fetchImpl), /401/);
 });
 
-test("fetchReadme returns raw text", async () => {
-  const result = await fetchReadme("tok", "tool-a", async () => ({ ok: true, status: 200, text: async () => "# Hi" }));
+test("fetchReadme prefers README.public.md when it exists", async () => {
+  const fetchImpl = async (url) => {
+    if (url.endsWith("/contents/README.public.md")) return { ok: true, status: 200, text: async () => "# Public" };
+    return { ok: true, status: 200, text: async () => "# Dev" };
+  };
+  const result = await fetchReadme("tok", "tool-a", fetchImpl);
+  assert.equal(result, "# Public");
+});
+
+test("fetchReadme falls back to the default README when README.public.md is missing", async () => {
+  const fetchImpl = async (url) => {
+    if (url.endsWith("/contents/README.public.md")) return { ok: false, status: 404, text: async () => "" };
+    assert.match(url, /\/readme$/);
+    return { ok: true, status: 200, text: async () => "# Hi" };
+  };
+  const result = await fetchReadme("tok", "tool-a", fetchImpl);
   assert.equal(result, "# Hi");
 });
 
-test("fetchReadme returns null on 404", async () => {
+test("fetchReadme returns null when neither README exists", async () => {
   const result = await fetchReadme("tok", "tool-a", async () => ({ ok: false, status: 404, text: async () => "" }));
   assert.equal(result, null);
 });

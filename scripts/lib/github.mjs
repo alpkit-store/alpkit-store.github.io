@@ -28,10 +28,15 @@ export async function listPublicDocsRepos(token, fetchImpl = fetch) {
 }
 
 export async function fetchReadme(token, name, fetchImpl = fetch) {
-  const res = await fetchImpl(`${API}/repos/${ORG}/${name}/readme`, {
-    headers: headers(token, "application/vnd.github.raw+json"),
-  });
-  if (res.status === 404) return null;
-  if (!res.ok) throw new Error(`README fetch failed for ${name}: ${res.status} ${await res.text()}`);
-  return await res.text();
+  // A repo can provide README.public.md as a sanitised variant for publication;
+  // it takes precedence over the default README.
+  for (const path of ["contents/README.public.md", "readme"]) {
+    const res = await fetchImpl(`${API}/repos/${ORG}/${name}/${path}`, {
+      headers: headers(token, "application/vnd.github.raw+json"),
+    });
+    if (res.status === 404) continue;
+    if (!res.ok) throw new Error(`README fetch failed for ${name}: ${res.status} ${await res.text()}`);
+    return await res.text();
+  }
+  return null;
 }

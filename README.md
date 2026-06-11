@@ -12,6 +12,9 @@ That's it — the nightly build picks it up. Remove the topic to take it down.
 > Check it for hostnames, URLs, credentials and anything else sensitive first.
 > The AI-generated card summary is instructed to exclude such details, but the full README is shown as-is.
 
+If the repo contains a **`README.public.md`**, that sanitised variant is published instead of the
+default README (same convention as the old push-sync). All ten originally-synced repos have one.
+
 ## How it works
 
 `.github/workflows/build.yml` runs nightly (02:17 UTC), on push to `main`, and on manual dispatch:
