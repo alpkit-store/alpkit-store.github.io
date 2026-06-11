@@ -1,0 +1,12 @@
+{
+  "name": "clook-ftp-monitor",
+  "description": "A lightweight dashboard for monitoring FTP uploads on cPanel servers with Pure-FTPd",
+  "pushedAt": "2026-04-03T16:01:20Z",
+  "topics": [
+    "public-docs"
+  ],
+  "readmeHash": "5248f1bd8519e19fc5a83a2db97d2b4abc4fbd6901c5a09b87ef7526394a0459",
+  "summary": "This tool provides a simple dashboard for monitoring FTP uploads on cPanel servers using Pure-FTPd. It is designed for staff who need to track file uploads in real time, view summary statistics, and detect unusual activity without requiring separate login credentials. The dashboard helps ensure FTP uploads are secure and accounted for by showing detailed upload information filtered by user or filename.",
+  "category": "Operations & monitoring",
+  "summarizedAt": "2026-06-11T07:05:05.983Z"
+}
