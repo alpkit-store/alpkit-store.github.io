@@ -5,7 +5,8 @@
   "topics": [
     "public-docs"
   ],
-  "readmeHash": null,
-  "summary": "Shopify Function / Metafield / Liquid snippet which outputs a Members price on the PDP and applies a discount at checkout.",
-  "category": "Utilities"
+  "readmeHash": "4e895424a91670ac68e2740459e045ba54297cc16e2449bbab651d80d8260e12",
+  "summary": "This tool automatically applies special member prices to products for logged-in customers on the Alpkit Shopify Plus UK store. It updates product pages to show member prices and applies discounts during checkout, ensuring members always pay the discounted rate without needing manual codes. Store managers use it to streamline member pricing and improve the shopping experience for loyal customers.",
+  "category": "Shopify",
+  "summarizedAt": "2026-06-11T13:30:46.889Z"
 }

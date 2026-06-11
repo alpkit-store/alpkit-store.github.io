@@ -5,7 +5,8 @@
   "topics": [
     "public-docs"
   ],
-  "readmeHash": null,
-  "summary": "QA harnesses for the Alpkit Shopify storefront - live-site bike-builder basket sweep via Browserbase",
-  "category": "Utilities"
+  "readmeHash": "5a3a986c2f2610e031fd5db6addae3d188d56cd09eeaac13f3fc06239aa71349",
+  "summary": "This tool automatically tests the Alpkit Shopify storefront by simulating real customer actions to add bikes to the shopping basket, ensuring that all Sonder bikes can be successfully purchased. It is used by quality assurance teams to catch issues with product availability and the checkout process on the live site, helping prevent customer frustration and lost sales. The tool handles challenges like out-of-stock options and site protections to provide reliable verification without creating actual orders.",
+  "category": "Shopify",
+  "summarizedAt": "2026-06-11T13:30:59.619Z"
 }

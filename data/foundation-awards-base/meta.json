@@ -5,7 +5,8 @@
   "topics": [
     "public-docs"
   ],
-  "readmeHash": null,
-  "summary": "FAB is a system for managing Alpkit Foundation Awards",
-  "category": "Utilities"
+  "readmeHash": "fc1b8e5cbb5bb774533c498b9c5f7f7439f39241465bc24e2528b01f9b04d05c",
+  "summary": "This tool manages the Alpkit Foundation Awards application process, replacing manual forms and spreadsheets with a streamlined system that handles hundreds of applications every two months. It allows trustees to review and vote on applications using shared spreadsheets, automates scoring and prioritization, and manages award decision communications via email. Staff involved in grant management and award decision-making use this tool to efficiently process and track applications while ensuring fair and transparent outcomes.",
+  "category": "Operations & monitoring",
+  "summarizedAt": "2026-06-11T13:30:43.727Z"
 }

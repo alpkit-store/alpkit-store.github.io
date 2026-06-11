@@ -5,7 +5,8 @@
   "topics": [
     "public-docs"
   ],
-  "readmeHash": null,
-  "summary": "Shopify Member Rewards app - currently manages refund reactivation",
-  "category": "Utilities"
+  "readmeHash": "7d1236d3e53168140deaf411f6c193f1d10da7a6be129aa7414881ff7f1811ce",
+  "summary": "This tool automatically reactivates member reward discount codes when a customer refunds an order on the Alpkit UK Shopify store. It generates a new discount code equivalent to the refunded value and adds it to the customer's account, saving customer service teams from manually handling reward reactivation. The system handles full and partial refunds, ensuring customers retain their rewards appropriately and tracks all actions for auditing.",
+  "category": "Shopify",
+  "summarizedAt": "2026-06-11T13:30:53.484Z"
 }
