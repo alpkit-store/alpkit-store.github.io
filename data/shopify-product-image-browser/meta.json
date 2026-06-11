@@ -1,0 +1,12 @@
+{
+  "name": "shopify-product-image-browser",
+  "description": "A single-file HTML tool for browsing and filtering product images from any public Shopify storefront — no server or build step required",
+  "pushedAt": "2026-06-11T09:30:26Z",
+  "topics": [
+    "public-docs"
+  ],
+  "readmeHash": "647f39cba940a6c7bc08b8fad695e3cf034e6405712e5e5dea5f2ab00af8722a",
+  "summary": "This tool allows users to browse and filter product images from any public Shopify store without needing any special setup. Retail staff can quickly view product images, titles, and types, helping them find specific products or check image assets easily. It solves the problem of manually searching through product images by providing a simple, browser-based interface with filtering options.",
+  "category": "Shopify",
+  "summarizedAt": "2026-06-11T13:28:59.503Z"
+}

@@ -1,0 +1,12 @@
+{
+  "name": "100-mile-club",
+  "description": "Shopify app for running a customer walking challenge - logs miles, tracks milestones, and can trigger rewards via Shopify Flow",
+  "pushedAt": "2026-06-09T08:50:14Z",
+  "topics": [
+    "public-docs"
+  ],
+  "readmeHash": "7c2f1433ca0cccb849179eae13ade25bc97ad1ae0cf41eb980bd3c9902d5a7f4",
+  "summary": "The 100 Mile Club is a Shopify app designed for running a customer walking challenge where participants log their miles walked, track progress towards milestones, and earn rewards automatically. Store admins can manage the challenge, feature specific walks on their storefront, and view aggregated stats to engage customers. This tool helps retailers encourage customer activity and loyalty through a fun, interactive fitness challenge integrated with Shopify's reward system.",
+  "category": "Shopify",
+  "summarizedAt": "2026-06-11T13:29:12.025Z"
+}

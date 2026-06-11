@@ -1,0 +1,12 @@
+{
+  "name": "amazon-inventory-upload-tool",
+  "description": "Uploads Amazon inventory via API using levels exported from KC",
+  "pushedAt": "2026-06-11T09:30:10Z",
+  "topics": [
+    "public-docs"
+  ],
+  "readmeHash": "5678ad07905c15d693e6089e4f2f89614cf95f3e2d76246faddcc5ce080db94c",
+  "summary": "This tool automates updating your Amazon Seller Central inventory by reading stock levels from a CSV file exported from your system and uploading them directly to Amazon via their API. It is designed for inventory or operations staff who need to keep Amazon listings accurate without manual entry, saving time and reducing errors. Additionally, it can verify updates and generate reports on buy box status to help optimize sales opportunities.",
+  "category": "Operations & monitoring",
+  "summarizedAt": "2026-06-11T13:28:43.539Z"
+}

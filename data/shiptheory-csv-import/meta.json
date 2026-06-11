@@ -1,0 +1,12 @@
+{
+  "name": "shiptheory-csv-import",
+  "description": "Node.js CLI tool to bulk-import shipments from a CSV file into ShipTheory via their API",
+  "pushedAt": "2026-06-11T09:30:28Z",
+  "topics": [
+    "public-docs"
+  ],
+  "readmeHash": "d78abb1cbbe5894621a38fa843ecfa2584829a00da4804494c47213c6c4e225d",
+  "summary": "This tool allows users to quickly upload multiple shipment records from a CSV file into the ShipTheory shipping system. It is designed for staff managing shipping logistics who need to import bulk shipment details efficiently, saving time and reducing manual data entry errors. By automating the import process, it streamlines shipment handling and improves operational accuracy.",
+  "category": "Operations & monitoring",
+  "summarizedAt": "2026-06-11T13:28:53.338Z"
+}

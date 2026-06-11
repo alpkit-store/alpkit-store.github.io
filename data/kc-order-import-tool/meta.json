@@ -1,0 +1,12 @@
+{
+  "name": "kc-order-import-tool",
+  "description": "Tool for importing orders into KC from a Matrixify export",
+  "pushedAt": "2026-06-11T09:30:12Z",
+  "topics": [
+    "public-docs"
+  ],
+  "readmeHash": "f0e89d092b9619f429380fcb972a5e6961c78864c274ea241f6a1676c1d65e9a",
+  "summary": "This tool converts Shopify order exports into a format compatible with Khaos Control, allowing retail staff to import sales orders efficiently. It filters, validates, and maps order data from Shopify exports, including web, POS, and draft orders, to ensure accurate and streamlined order processing in Khaos Control. It is especially useful for teams managing order imports and integrations between Shopify and Khaos Control systems.",
+  "category": "Khaos Control",
+  "summarizedAt": "2026-06-11T13:28:40.422Z"
+}

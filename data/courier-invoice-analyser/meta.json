@@ -1,0 +1,12 @@
+{
+  "name": "courier-invoice-analyser",
+  "description": "CIA - A workflow for analysing courier performance",
+  "pushedAt": "2026-06-11T13:27:53Z",
+  "topics": [
+    "public-docs"
+  ],
+  "readmeHash": "2202b40a762d64844c64437d94bb66a8df9e9d94bbeb97bc5fd7fc0dc31a8250",
+  "summary": "This tool helps operations staff monitor courier costs and check that carrier invoices match the company's dispatch records. It validates invoices, merges delivery reports, and generates detailed monthly courier performance reports, highlighting any discrepancies or issues for follow-up. It is designed to ensure accurate billing and provide insights into courier usage and delivery performance.",
+  "category": "Operations & monitoring",
+  "summarizedAt": "2026-06-11T13:29:19.254Z"
+}

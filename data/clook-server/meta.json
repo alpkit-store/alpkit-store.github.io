@@ -1,0 +1,12 @@
+{
+  "name": "clook-server",
+  "description": "A record of the Clook Server codebase [not synced] potentially out-of-date, check live files first",
+  "pushedAt": "2026-06-11T13:27:57Z",
+  "topics": [
+    "public-docs"
+  ],
+  "readmeHash": "1b0a172b5a22c591c46ad904e122e9b867dfbc6b678c41936f3d9f5f3eb87cd8",
+  "summary": "The Clook Server is an internal platform used by Alpkit to manage orders, synchronize inventory, and provide business intelligence by integrating data from their ERP system, Shopify stores, Amazon marketplace, and other services. It is primarily used by operations and e-commerce teams to streamline order processing, inventory updates, customer support, and marketing activities across multiple sales channels. This tool solves the problem of coordinating complex data flows and automating key retail processes to improve efficiency and reporting accuracy.",
+  "category": "Operations & monitoring",
+  "summarizedAt": "2026-06-11T13:29:08.347Z"
+}

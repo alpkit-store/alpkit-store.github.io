@@ -1,0 +1,12 @@
+{
+  "name": "member-rewards-update-tool",
+  "description": "Automates the process of updating used and expired Member Rewards. Also prepares a file to update Klaviyo",
+  "pushedAt": "2026-06-11T09:30:22Z",
+  "topics": [
+    "public-docs"
+  ],
+  "readmeHash": "525dbb7b8077124539386e81ac1c5c9742447b1de5e2bd330555d3410b573cc1",
+  "summary": "This tool automates updating member discount rewards by processing recent discount usage and customer data exports. It identifies used and expired rewards, updates customer profiles accordingly, and prepares files for importing these changes into Shopify and Klaviyo. Marketing and customer service teams use it to keep member rewards accurate and synchronized across platforms without manual effort.",
+  "category": "Marketing & members",
+  "summarizedAt": "2026-06-11T13:28:46.825Z"
+}

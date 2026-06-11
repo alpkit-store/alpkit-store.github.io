@@ -1,0 +1,12 @@
+{
+  "name": "klaviyo-shopify-preferences",
+  "description": "Shopify embedded app that lets customers manage their Klaviyo marketing preferences via a Cloudflare Worker proxy",
+  "pushedAt": "2026-06-11T09:30:19Z",
+  "topics": [
+    "public-docs"
+  ],
+  "readmeHash": "8660af37fc1dc4f29e05930a83ea942655470bccc7153c6a474844007504d9e7",
+  "summary": "This tool is a Shopify app that lets customers manage their marketing preferences for Klaviyo directly from a Shopify store. It securely updates customer profiles with their chosen categories and interests, ensuring personalized marketing communications. Store owners use this to improve customer engagement by syncing preference data between Shopify and Klaviyo.",
+  "category": "Shopify",
+  "summarizedAt": "2026-06-11T13:29:05.064Z"
+}
