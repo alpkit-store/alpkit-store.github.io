@@ -144,3 +144,68 @@ The script is preconfigured for the **Amazon UK marketplace** (`A1F83G8C2ARO7P`)
 - **Retries with exponential backoff**: SP-API requests automatically retry up to 3 times on HTTP 429 (throttling) and 5xx (server) errors, with delays of 2s, 4s, and 8s.
 - **Feed polling timeout**: If the feed hasn't completed after 240 polls (1 hour), the script exits with an error.
 - **Empty processing status**: Fails fast rather than polling indefinitely if Amazon returns a blank status.
+
+---
+
+# Buy Box Gap Report (`amazon_buybox_report.php`)
+
+A sibling read-only CLI that lists SKUs **with sellable stock but no featured offer ("buy box")**, with the reason and the price you'd need to win it. It reuses the same `amazon.env`, auth (LWA + SigV4), and retry/backoff helpers as the feed tool.
+
+## What it does
+
+1. Reads `matrixify/amazon_stock.csv` and keeps SKUs with `qty > 0` (your inventory truth — all offers are merchant-fulfilled, no FBA).
+2. **`getListingOffersBatch`** (Product Pricing v0, 20 SKUs/call) — determines whether *your* offer holds the featured offer (`MyOffer` + `IsBuyBoxWinner`), your landed price, the buy-box price, and whether the buy box is suppressed.
+3. For SKUs you don't hold: **`getFeaturedOfferExpectedPriceBatch`** (Product Pricing 2022-05-01, 40 SKUs/call) — the FOEP price at/below which you'd become the featured offer.
+4. Writes `spapi_sync_out/buybox_report_<UTCstamp>.csv`.
+
+## Usage
+
+```bash
+php amazon_buybox_report.php [--limit=N] [--no-foep] [--no-email] [--customer-type=Consumer|Business]
+```
+
+| Flag | Effect |
+|------|--------|
+| `--limit=N` | Only check the first N in-stock SKUs (quick test run). |
+| `--no-foep` | Skip the slow FOEP pass (omits the price-to-win column). |
+| `--no-email` | Don't email the report even if `REPORT_EMAIL_TO` is set. |
+| `--customer-type=` | `Consumer` (default) or `Business`. |
+
+Start with `--limit=5` to confirm auth and output before a full run.
+
+## Emailing the report
+
+On successful completion the CSV is emailed (as an attachment) if `REPORT_EMAIL_TO` is set in `amazon.env`. Sending uses the server's local MTA via PHP `mail()` — the same deliverable `noreply@alpkit.com` sender pattern as the clook-server notifications — so no SMTP setup is needed.
+
+```env
+# Email the finished report (optional). Comma-separated for multiple recipients.
+REPORT_EMAIL_TO=james@alpkit.com,ops@alpkit.com
+# Optional; defaults to noreply@alpkit.com
+REPORT_EMAIL_FROM=noreply@alpkit.com
+```
+
+Emailing is **best-effort**: if it's unset, skipped (`--no-email`), or `mail()` fails, the run still completes and the report stays on disk — a mail problem never discards a report. Combine with `--limit=5` to test the email path quickly.
+
+## Output columns
+
+`sku, asin, qty, holds_buybox, your_landed_price, buybox_price, foep_target_price, reason`
+
+The CSV contains **only** SKUs without the buy box. A one-line summary (checked / held / without) is written to stderr.
+
+Reason values: `Buy box suppressed (no featured offer)`, `Not featured-offer eligible …`, `Price not competitive (buy box vs your landed price)`, `Lost featured offer (non-price: handling time / metrics)`, `ASIN not eligible …`, or `error: <message>` for per-SKU API failures.
+
+## Rate limits
+
+`getListingOffersBatch` is throttled to **0.5 req/s** (script paces ~2s/batch); `getFeaturedOfferExpectedPriceBatch` to **0.033 req/s** (one call per ~30s). The FOEP pass only runs on the no-buy-box subset, but on a large catalogue it dominates wall-clock — use `--no-foep` for a fast first look.
+
+The Product Pricing quota is a tiny per-account/app bucket (burst 1) **separate** from the Feeds quota the inventory feed uses — so the two tools don't compete, but **don't run two reports at once**, and give the bucket a minute to refill before re-running an aborted one. A `QuotaExceeded` 429 means the bucket is empty; the script backs off 30s/60s to wait out the refill.
+
+## Resilience on long runs
+
+A full-catalogue run can take ~50–60 min, which is around the LWA token lifetime, so the script is built to survive long runs:
+
+- **Token auto-refresh** — the LWA access token is re-minted once it's >40 min old (it expires at 60 min), before every batch in both passes.
+- **Best-effort FOEP** — a FOEP batch that fails (throttle/expiry/transient) just leaves `foep_target_price` blank for those SKUs; it never aborts the run.
+- **CSV always written** — the report is built from pass-1 data regardless of what pass 2 does, so a late failure can't discard the whole run.
+- **Pass-1 batch failures** are recorded as `error: <message>` rows and the run continues.
+- **Throttle-aware backoff** — 429s back off 30s/60s (matched to the refill), other retriable errors 2s/4s/8s.
