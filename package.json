@@ -1,0 +1,13 @@
+{
+  "name": "alpkit-store-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/",
+    "sync": "node scripts/sync.mjs",
+    "build": "node scripts/build.mjs"
+  },
+  "devDependencies": {
+    "marked": "^18.0.5"
+  }
+}
