@@ -35,4 +35,11 @@ test("renderRepoPage includes summary, README html, back link and GitHub link", 
 
 test("escapeHtml escapes markup", () => {
   assert.equal(escapeHtml('<b>&"'), "&lt;b&gt;&amp;&quot;");
+  assert.equal(escapeHtml("it's"), "it&#39;s");
+});
+
+test("renderIndex buckets unknown categories into Utilities", () => {
+  const html = renderIndex([{ ...repo, category: "Legacy category" }]);
+  assert.match(html, /<h2>Utilities<\/h2>/);
+  assert.match(html, /kc-order-import-tool/);
 });

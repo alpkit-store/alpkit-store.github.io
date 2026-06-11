@@ -36,6 +36,11 @@ test("generateSummary throws on API error", async () => {
   await assert.rejects(() => generateSummary(repo, "#", "tok", fetchImpl), /429/);
 });
 
+test("generateSummary throws a descriptive error when extracted JSON is invalid", async () => {
+  const content = '{"summary": "S.", "category": "Shopify"}\nNote: config uses {key: value} syntax.';
+  await assert.rejects(() => generateSummary(repo, "#", "tok", async () => modelResponse(content)), /invalid JSON/i);
+});
+
 test("CATEGORIES is the fixed taxonomy", () => {
   assert.deepEqual(CATEGORIES, ["Shopify", "Khaos Control", "Operations & monitoring", "Marketing & members", "Utilities"]);
 });

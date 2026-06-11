@@ -27,7 +27,12 @@ export async function generateSummary(repo, readme, token, fetchImpl = fetch) {
   const text = data.choices?.[0]?.message?.content || "";
   const match = text.match(/\{[\s\S]*\}/);
   if (!match) throw new Error(`Models response contained no JSON: ${text.slice(0, 200)}`);
-  const parsed = JSON.parse(match[0]);
+  let parsed;
+  try {
+    parsed = JSON.parse(match[0]);
+  } catch {
+    throw new Error(`Models response contained invalid JSON: ${text.slice(0, 200)}`);
+  }
   if (typeof parsed.summary !== "string" || !parsed.summary.trim()) throw new Error("Summary missing in model response");
   return {
     summary: parsed.summary.trim(),

@@ -41,3 +41,8 @@ test("fetchReadme returns null on 404", async () => {
   const result = await fetchReadme("tok", "tool-a", async () => ({ ok: false, status: 404, text: async () => "" }));
   assert.equal(result, null);
 });
+
+test("fetchReadme throws on non-404 API error", async () => {
+  const fetchImpl = async () => ({ ok: false, status: 500, text: async () => "boom" });
+  await assert.rejects(() => fetchReadme("tok", "tool-a", fetchImpl), /500/);
+});

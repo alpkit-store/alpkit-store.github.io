@@ -37,7 +37,7 @@ ${body}
 
 export function renderIndex(repos) {
   const sections = CATEGORIES.map((cat) => {
-    const cards = repos.filter((r) => r.category === cat);
+    const cards = repos.filter((r) => (CATEGORIES.includes(r.category) ? r.category : "Utilities") === cat);
     if (!cards.length) return "";
     return `<section class="category" data-category>
 <h2>${escapeHtml(cat)}</h2>
