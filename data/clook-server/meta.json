@@ -6,7 +6,8 @@
     "public-docs"
   ],
   "readmeHash": "1b0a172b5a22c591c46ad904e122e9b867dfbc6b678c41936f3d9f5f3eb87cd8",
-  "summary": "The Clook Server is an internal platform used by Alpkit to manage orders, synchronize inventory, and provide business intelligence by integrating data from their ERP system, Shopify stores, Amazon marketplace, and other services. It is primarily used by operations and e-commerce teams to streamline order processing, inventory updates, customer support, and marketing activities across multiple sales channels. This tool solves the problem of coordinating complex data flows and automating key retail processes to improve efficiency and reporting accuracy.",
+  "promptVersion": 2,
+  "summary": "Keeps all your orders, inventory, and business data in sync across Alpkit's systems like Khaos Control ERP, Shopify, and Amazon. Operations teams use it to manage orders, stock levels, and despatch processes while marketing and support teams benefit from its integrations with tools like Klaviyo and Gorgias. It solves the headache of juggling multiple channels by centralizing data and automating key workflows such as order fulfilment, customer updates, and reporting.",
   "category": "Operations & monitoring",
-  "summarizedAt": "2026-06-11T13:29:08.347Z"
+  "summarizedAt": "2026-06-12T07:16:43.617Z"
 }

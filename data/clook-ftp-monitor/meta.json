@@ -6,7 +6,8 @@
     "public-docs"
   ],
   "readmeHash": "5248f1bd8519e19fc5a83a2db97d2b4abc4fbd6901c5a09b87ef7526394a0459",
-  "summary": "This tool provides a simple dashboard for monitoring FTP uploads on cPanel servers using Pure-FTPd. It is designed for staff who need to track file uploads in real time, view summary statistics, and detect unusual activity without requiring separate login credentials. The dashboard helps ensure FTP uploads are secure and accounted for by showing detailed upload information filtered by user or filename.",
+  "promptVersion": 2,
+  "summary": "Tracks all file uploads to FTP on your cPanel server in real time, giving you clear stats on who uploaded what, when, and how much data was transferred. The dashboard helps IT or operations staff quickly spot unusual upload activity and filter uploads by user or filename. It removes the need to dig through logs manually and keeps everything secure by using existing login sessions.",
   "category": "Operations & monitoring",
-  "summarizedAt": "2026-06-11T07:05:05.983Z"
+  "summarizedAt": "2026-06-12T07:16:53.717Z"
 }

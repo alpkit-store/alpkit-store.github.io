@@ -6,7 +6,8 @@
     "public-docs"
   ],
   "readmeHash": "a85c448de4fb0132e901a28443d3f085e9070e3b24687005035f1bd1c445b45a",
-  "summary": "This tool is a set of Shopify checkout functions designed to manage cart rules for Alpkit stores. It helps prevent unauthorized free items, enforces bundle pricing rules, restricts shipping options based on destination and product tags, and ensures only one member rewards discount code applies per order. Store admins use it to maintain pricing integrity, control shipping options, and manage discount exclusivity during checkout.",
+  "promptVersion": 2,
+  "summary": "Handles special checkout rules for the Shopify store by managing free items, bundle pricing, shipping restrictions based on destination, and limiting member reward discount codes to one per order. Store admins use it to prevent incorrect free items in carts, ensure bundles are properly priced, restrict shipping options depending on location, and avoid stacking multiple member discounts. This keeps the checkout process smooth, fair, and compliant with store policies without manual oversight.",
   "category": "Shopify",
-  "summarizedAt": "2026-06-11T13:28:37.490Z"
+  "summarizedAt": "2026-06-12T07:16:10.498Z"
 }

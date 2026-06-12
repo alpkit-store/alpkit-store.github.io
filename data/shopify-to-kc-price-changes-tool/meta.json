@@ -6,7 +6,8 @@
     "public-docs"
   ],
   "readmeHash": "060845e02a0357e1195d6a347ed1ff2c4d0ab6c0ff6503c79423631e9ab318da",
-  "summary": "This tool helps sync product variant price changes from Shopify to the Khaos Control (KC) system by importing Shopify price data, identifying real price changes, and exporting actionable updates. It is designed for operations teams managing product pricing, ensuring only meaningful price updates are sent to KC, reducing errors and manual work. The tool automates tracking and exporting price additions, updates, or deletions based on recent Shopify data compared to the KC pricelist.",
+  "promptVersion": 2,
+  "summary": "Keeps Shopify product variant prices in sync with the company’s Khaos Control pricelist by importing recent price changes from Shopify exports, filtering out non-price updates, and generating a list of add, update, or delete actions for the pricelist team. Operations staff run it regularly to ensure pricelist accuracy without manual cross-checking. It solves the problem of manually tracking meaningful price changes and updating the pricelist database efficiently and reliably.",
   "category": "Khaos Control",
-  "summarizedAt": "2026-06-11T13:28:50.489Z"
+  "summarizedAt": "2026-06-12T07:16:23.790Z"
 }

@@ -6,7 +6,8 @@
     "public-docs"
   ],
   "readmeHash": "6e304f288f5853b569367b15498060510b067c9a88a2d333c82424dae4c3da9a",
-  "summary": "Pulse is a tool that automatically keeps product details, stock levels, customer orders, and shipping updates synchronized between Shopify online stores and the Khaos Control ERP system. It is designed for retail staff who manage inventory and orders, eliminating manual data entry and ensuring accurate, up-to-date information across both platforms. The tool also provides a dashboard to monitor sync status and manage settings, helping streamline operations and reduce errors.",
+  "promptVersion": 2,
+  "summary": "Keeps Shopify online stores and Khaos Control ERP in sync by automating updates of products, stock levels, customer orders, and shipping information. Operations teams use it to avoid manual data entry errors and ensure both systems always show accurate, up-to-date information. It also provides a dashboard to monitor sync status and manage configurations, making cross-platform order fulfilment smoother and more reliable.",
   "category": "Operations & monitoring",
-  "summarizedAt": "2026-06-11T13:29:15.447Z"
+  "summarizedAt": "2026-06-12T07:16:50.532Z"
 }

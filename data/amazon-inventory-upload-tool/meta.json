@@ -6,7 +6,8 @@
     "public-docs"
   ],
   "readmeHash": "5678ad07905c15d693e6089e4f2f89614cf95f3e2d76246faddcc5ce080db94c",
-  "summary": "This tool automates updating your Amazon Seller Central inventory by reading stock levels from a CSV file exported from your system and uploading them directly to Amazon via their API. It is designed for inventory or operations staff who need to keep Amazon listings accurate without manual entry, saving time and reducing errors. Additionally, it can verify updates and generate reports on buy box status to help optimize sales opportunities.",
+  "promptVersion": 2,
+  "summary": "Uploads inventory quantities from a CSV file directly to Amazon Seller Central, keeping stock levels in sync without manual updates. Operations teams use it to automate updating Amazon listings based on local stock data, avoiding errors and saving time. It also optionally verifies that updates were applied correctly by checking Amazon's listings afterwards.",
   "category": "Operations & monitoring",
-  "summarizedAt": "2026-06-11T13:28:43.539Z"
+  "summarizedAt": "2026-06-12T07:16:18.170Z"
 }

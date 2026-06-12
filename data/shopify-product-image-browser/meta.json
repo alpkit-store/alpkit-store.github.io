@@ -6,7 +6,8 @@
     "public-docs"
   ],
   "readmeHash": "647f39cba940a6c7bc08b8fad695e3cf034e6405712e5e5dea5f2ab00af8722a",
-  "summary": "This tool allows users to browse and filter product images from any public Shopify store without needing any special setup. Retail staff can quickly view product images, titles, and types, helping them find specific products or check image assets easily. It solves the problem of manually searching through product images by providing a simple, browser-based interface with filtering options.",
+  "promptVersion": 2,
+  "summary": "Lets you browse and filter product images from any public Shopify store without needing special software. Marketing and product teams can quickly find specific products by type or name and see all related images in one place, saving time compared to manually searching through the store. It works entirely in the browser and shows results as they load, making image review faster and easier.",
   "category": "Shopify",
-  "summarizedAt": "2026-06-11T13:28:59.503Z"
+  "summarizedAt": "2026-06-12T07:16:33.617Z"
 }

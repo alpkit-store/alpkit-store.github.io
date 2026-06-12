@@ -6,7 +6,8 @@
     "public-docs"
   ],
   "readmeHash": "8660af37fc1dc4f29e05930a83ea942655470bccc7153c6a474844007504d9e7",
-  "summary": "This tool is a Shopify app that lets customers manage their marketing preferences for Klaviyo directly from a Shopify store. It securely updates customer profiles with their chosen categories and interests, ensuring personalized marketing communications. Store owners use this to improve customer engagement by syncing preference data between Shopify and Klaviyo.",
+  "promptVersion": 2,
+  "summary": "Lets customers update their email marketing preferences like categories and interests directly on the Shopify store, syncing those choices with Klaviyo for targeted marketing. Store managers use it to keep customer preferences accurate without manual updates, improving personalized communication. It handles secure data transfer behind the scenes, so customers control what emails they receive without extra hassle for staff.",
   "category": "Shopify",
-  "summarizedAt": "2026-06-11T13:29:05.064Z"
+  "summarizedAt": "2026-06-12T07:16:39.888Z"
 }

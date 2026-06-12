@@ -6,7 +6,8 @@
     "public-docs"
   ],
   "readmeHash": "d78abb1cbbe5894621a38fa843ecfa2584829a00da4804494c47213c6c4e225d",
-  "summary": "This tool allows users to quickly upload multiple shipment records from a CSV file into the ShipTheory shipping system. It is designed for staff managing shipping logistics who need to import bulk shipment details efficiently, saving time and reducing manual data entry errors. By automating the import process, it streamlines shipment handling and improves operational accuracy.",
+  "promptVersion": 2,
+  "summary": "Imports multiple shipments at once from a CSV file directly into the shipping system, saving time on manual entry. Warehouse or shipping staff can quickly upload shipment details including product info and delivery preferences, ensuring accuracy and speeding up dispatch. It removes the hassle of inputting each shipment individually by automating the bulk import process.",
   "category": "Operations & monitoring",
-  "summarizedAt": "2026-06-11T13:28:53.338Z"
+  "summarizedAt": "2026-06-12T07:16:26.716Z"
 }

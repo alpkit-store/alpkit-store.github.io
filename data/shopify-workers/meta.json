@@ -6,6 +6,7 @@
     "public-docs"
   ],
   "readmeHash": "e8ba4224b65a56457ead90021f8762c71d8dede8d3359dbe95b0dc3b55f2afd4",
+  "promptVersion": null,
   "summary": "This tool connects Shopify with other services using small, independent programs called workers. It is mainly used by operations teams to automate tasks like creating support tickets from order notes, helping streamline workflows and reduce manual work. Each worker handles a specific integration, making it easier to manage and deploy connections between Shopify and external systems.",
   "category": "Shopify",
   "summarizedAt": "2026-06-11T13:30:56.357Z"

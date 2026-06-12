@@ -1,12 +1,13 @@
 {
   "name": "alpkit-store.github.io",
   "description": "A GitHub Pages site hosting internal tool documentation (e.g. Shopify, Klaviyo, Amazon, and order management tools).",
-  "pushedAt": "2026-06-11T13:31:00Z",
+  "pushedAt": "2026-06-12T07:15:39Z",
   "topics": [
     "public-docs"
   ],
   "readmeHash": "f5ef5e15337fb97d4045ab5544fb7248f1ca822342fe8b444596b3c422d7c7b6",
-  "summary": "This tool automatically collects and publishes documentation for Alpkit's internal software tools by gathering README files from selected repositories. It creates easy-to-understand summaries and organizes them into categories, making it simple for non-technical staff to find and understand information about tools like Shopify and order management. The tool helps keep documentation up-to-date and accessible without manual effort.",
+  "promptVersion": 2,
+  "summary": "Keeps an up-to-date public website that showcases Alpkit's internal tools by automatically collecting and summarizing documentation from multiple repositories. Team members who manage internal tools or want to share their work can easily publish or update documentation without manual effort. It removes the hassle of maintaining separate documentation sites and ensures summaries are easy to understand and organized by category.",
   "category": "Utilities",
-  "summarizedAt": "2026-06-11T13:28:56.977Z"
+  "summarizedAt": "2026-06-12T07:16:30.101Z"
 }

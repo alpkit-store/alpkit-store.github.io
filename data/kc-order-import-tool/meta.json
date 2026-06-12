@@ -6,7 +6,8 @@
     "public-docs"
   ],
   "readmeHash": "f0e89d092b9619f429380fcb972a5e6961c78864c274ea241f6a1676c1d65e9a",
-  "summary": "This tool converts Shopify order exports into a format compatible with Khaos Control, allowing retail staff to import sales orders efficiently. It filters, validates, and maps order data from Shopify exports, including web, POS, and draft orders, to ensure accurate and streamlined order processing in Khaos Control. It is especially useful for teams managing order imports and integrations between Shopify and Khaos Control systems.",
+  "promptVersion": 2,
+  "summary": "Transforms Shopify order exports into a format that Khaos Control can process for sales orders. Operations teams use it to filter, validate, and convert orders from multiple sales channels, ensuring only paid and approved orders are imported smoothly into the system. This removes manual reformatting work and helps keep order data consistent across platforms.",
   "category": "Khaos Control",
-  "summarizedAt": "2026-06-11T13:28:40.422Z"
+  "summarizedAt": "2026-06-12T07:16:14.894Z"
 }

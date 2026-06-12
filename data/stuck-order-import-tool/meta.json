@@ -6,7 +6,8 @@
     "public-docs"
   ],
   "readmeHash": "46ffb8c322674fa97a35dd045a570c4e10b5f87fe58f18b68a28e58fd1fb7f05",
-  "summary": "This tool helps staff quickly find and copy order XML files that are stuck or missing by entering order numbers. It provides a simple interface to search a folder of order files, shows which orders were found or not, and safely copies the matched files to a chosen location. It is designed for operations teams who need to manage and resolve order import issues efficiently.",
+  "promptVersion": 2,
+  "summary": "Helps operations staff quickly locate and gather multiple order XML files that are stuck or missing by entering order numbers. It scans a folder for matching files, shows which orders were found or not, and safely copies the needed files to a chosen output folder to speed up issue resolution. This removes the hassle of manually searching through files and reduces errors when handling order data.",
   "category": "Operations & monitoring",
-  "summarizedAt": "2026-06-11T13:29:02.628Z"
+  "summarizedAt": "2026-06-12T07:16:36.584Z"
 }
