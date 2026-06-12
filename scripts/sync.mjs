@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { readdir, readFile, writeFile, mkdir, rm } from "node:fs/promises";
 import { listPublicDocsRepos, fetchReadme } from "./lib/github.mjs";
-import { generateSummary } from "./lib/summarize.mjs";
+import { generateSummary, PROMPT_VERSION } from "./lib/summarize.mjs";
 
 const DATA = "data";
 
@@ -34,7 +34,8 @@ for (const repo of repos) {
 
   let { summary, category, summarizedAt } = existing || {};
   let hashToStore = readmeHash;
-  if (!summary || existing?.readmeHash !== readmeHash) {
+  let versionToStore = PROMPT_VERSION;
+  if (!summary || existing?.readmeHash !== readmeHash || existing?.promptVersion !== PROMPT_VERSION) {
     try {
       ({ summary, category } = await generateSummary(repo, readme, modelsToken));
       summarizedAt = new Date().toISOString();
@@ -42,6 +43,7 @@ for (const repo of repos) {
     } catch (err) {
       console.warn(`WARN: summary failed for ${repo.name}: ${err.message}`);
       hashToStore = existing?.readmeHash ?? null;
+      versionToStore = existing?.promptVersion ?? null;
       if (!summary) {
         summary = repo.description || "No summary available yet.";
         category = "Utilities";
@@ -60,6 +62,7 @@ for (const repo of repos) {
         pushedAt: repo.pushedAt,
         topics: repo.topics,
         readmeHash: hashToStore,
+        promptVersion: versionToStore,
         summary,
         category,
         summarizedAt,

@@ -1,5 +1,8 @@
 export const CATEGORIES = ["Shopify", "Khaos Control", "Operations & monitoring", "Marketing & members", "Utilities"];
 
+// Bump whenever SYSTEM_PROMPT changes — invalidates cached summaries in data/*/meta.json.
+export const PROMPT_VERSION = 2;
+
 const ENDPOINT = "https://models.github.ai/inference/chat/completions";
 const MODEL = "openai/gpt-4.1-mini";
 const README_CHAR_LIMIT = 24000;
@@ -7,6 +10,8 @@ const README_CHAR_LIMIT = 24000;
 const SYSTEM_PROMPT = `You write plain-English summaries of internal software tools for non-technical retail company staff.
 Respond with ONLY a JSON object: {"summary": "...", "category": "..."}.
 - "summary": 2-3 sentences covering what the tool does, who would use it, and what problem it solves. No jargon, no URLs, no hostnames, no credentials, no installation details.
+- Write like a colleague explaining it over a desk, not a product brochure. Never open with "This tool", "This is", "This repo", "A tool that", or the repo name. Instead lead with the action it performs ("Keeps an eye on..."), the people it helps ("Warehouse staff use it to..."), or the problem it removes ("No more guessing whether...").
+- Vary sentence structure; avoid stock phrases like "is designed for", "provides a", "allows users to".
 - "category": exactly one of: ${CATEGORIES.join(", ")}.`;
 
 export async function generateSummary(repo, readme, token, fetchImpl = fetch) {
@@ -15,7 +20,7 @@ export async function generateSummary(repo, readme, token, fetchImpl = fetch) {
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     body: JSON.stringify({
       model: MODEL,
-      temperature: 0.2,
+      temperature: 0.8,
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: `Repo name: ${repo.name}\nDescription: ${repo.description}\n\nREADME:\n${readme.slice(0, README_CHAR_LIMIT)}` },
