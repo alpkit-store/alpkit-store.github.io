@@ -1,13 +1,13 @@
 {
   "name": "alpkit-content-engine",
   "description": "ACE: Shopify → local markdown → Shopify pipeline with indexing",
-  "pushedAt": "2026-06-11T16:50:03Z",
+  "pushedAt": "2026-06-12T14:58:55Z",
   "topics": [
     "public-docs"
   ],
   "readmeHash": "4b96f523c8cf0a6ba3ed57b80afe33bea8c08ab01229a71a6b0624f51c01224b",
-  "promptVersion": null,
-  "summary": "This tool helps Alpkit manage their website content by syncing blog posts and collection pages between Shopify and local markdown files. It allows marketing and content teams to edit content offline, build searchable indexes, and then upload changes back to Shopify without needing API credentials. Additionally, it provides SEO insights and content review reports to improve site performance and scheduling.",
+  "promptVersion": 2,
+  "summary": "Keeps your website content in sync by pulling blog posts and collection pages from Shopify into easy-to-edit markdown files, then packages your changes back into Shopify without needing any API keys. Marketing and content teams can manage and review site content locally, while also getting regular SEO insights and content performance reports. It simplifies content updates and helps spot gaps or opportunities for better scheduling and optimization.",
   "category": "Shopify",
-  "summarizedAt": "2026-06-11T13:29:21.583Z"
+  "summarizedAt": "2026-06-13T06:32:37.137Z"
 }

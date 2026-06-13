@@ -6,8 +6,8 @@
     "public-docs"
   ],
   "readmeHash": "2ba07eddfda6198b7a03df88e18d59c3735153493713f61cefd334431a17d26a",
-  "promptVersion": null,
-  "summary": "This tool is an upgraded bike builder for the Alpkit Shopify theme that uses a structured system to manage bike options and pricing more reliably. It is designed for Shopify theme developers and product managers to replace the old tag-based system, ensuring accurate pricing and easier customization of bike products. This solves issues with incorrect pricing and fragile product configurations in the online store.",
+  "promptVersion": 2,
+  "summary": "Creates a more reliable and organized way to build custom bikes on the Alpkit Shopify site by replacing the old, fragile tag system with a structured metaobject setup. Shopify store managers and developers can manage bike options and pricing more easily, preventing issues like incorrect pricing variants. This helps keep the bike customization process smooth and accurate for both staff and customers.",
   "category": "Shopify",
-  "summarizedAt": "2026-06-11T13:30:50.613Z"
+  "summarizedAt": "2026-06-13T06:32:54.650Z"
 }

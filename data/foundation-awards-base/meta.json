@@ -6,8 +6,8 @@
     "public-docs"
   ],
   "readmeHash": "fc1b8e5cbb5bb774533c498b9c5f7f7439f39241465bc24e2528b01f9b04d05c",
-  "promptVersion": null,
-  "summary": "This tool manages the Alpkit Foundation Awards application process, replacing manual forms and spreadsheets with a streamlined system that handles hundreds of applications every two months. It allows trustees to review and vote on applications using shared spreadsheets, automates scoring and prioritization, and manages award decision communications via email. Staff involved in grant management and award decision-making use this tool to efficiently process and track applications while ensuring fair and transparent outcomes.",
+  "promptVersion": 2,
+  "summary": "Manages the entire Alpkit Foundation grant application process, helping staff handle hundreds of applications efficiently without relying on spreadsheets or manual emails. It organizes applications as easy-to-read files, collects trustee votes in shared spreadsheets, and automates sending outcome emails, making grant decisions smoother and less error-prone. This system is ideal for grant administrators who need to coordinate reviews and communicate results reliably.",
   "category": "Operations & monitoring",
-  "summarizedAt": "2026-06-11T13:30:43.727Z"
+  "summarizedAt": "2026-06-13T06:32:42.037Z"
 }
