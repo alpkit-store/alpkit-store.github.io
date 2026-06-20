@@ -1,7 +1,7 @@
 {
   "name": "shopify-workers",
   "description": "Cloudflare Workers gluing Shopify to other services (Flow HTTP proxies etc.)",
-  "pushedAt": "2026-06-10T15:55:16Z",
+  "pushedAt": "2026-06-20T05:55:39Z",
   "topics": [
     "public-docs"
   ],
