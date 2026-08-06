@@ -17,12 +17,15 @@ The extension runs as a serverless function during Shopify's cart transformation
 
 1. Scans all cart lines for items with a price of `$0.00`
 2. For each free item, checks whether it has a valid reason to be free:
-   - `_bikeComponent` cart line attribute is `"true"`
-   - `_bundleComponent` cart line attribute is `"true"`
-   - Product has the `freeItem` tag
-3. If none of those conditions are met, the item is blocked by setting its price to `$999.99` with a message indicating it cannot be purchased separately
+   - Product has the `freeItem` tag, or
+   - `_bikeComponent` is `"true"` **and** the line's `_parentLineItem` (`"<GROUP>___<id>"`) resolves to a bike frame that is still in the cart (a frame carries `_primaryParentLineItem: "<id>"`)
+3. If neither condition is met, the item is blocked by setting its price to `$999.99` with a message indicating it cannot be purchased separately
 
 Paid items are always left untouched.
+
+> **Why the parent check matters.** Cart line attributes are supplied by the storefront, so a customer can set them freely — an exemption granted on an attribute alone is an open door. Every allowance therefore has to be anchored to something the customer doesn't control: either a merchant-set product tag, or a *live* pairing against another line in the same cart. Order #1661038 slipped through because `_bikeComponent` was trusted on its own after the frame had been removed.
+>
+> The `_bundleComponent` attribute was previously an unconditional exemption. It was removed in Aug 2026: no theme ever set it, and a sweep of 103,473 orders (30,777 `$0.00` line items) found zero legitimate uses, so it functioned purely as a bypass token. Bundle lines use `_bundle_free` / `_bundle_parent` / `_bundle_instance_id` instead — see Bundle Pricing below, which does its own strict pairing.
 
 ## Bundle Pricing
 
@@ -272,10 +275,11 @@ Create a new `.json` file in the extension's `tests/fixtures/` folder. The test 
 | Condition | Result |
 |---|---|
 | Item price > $0 | No change |
-| Item price = $0 with `_bikeComponent: "true"` attribute | Allowed |
-| Item price = $0 with `_bundleComponent: "true"` attribute | Allowed |
 | Item price = $0 with `freeItem` product tag | Allowed |
-| Item price = $0 with none of the above | Blocked ($999.99) |
+| Item price = $0, `_bikeComponent: "true"`, `_parentLineItem` resolves to a frame in the cart | Allowed |
+| Item price = $0, `_bikeComponent: "true"`, parent frame **not** in the cart | Blocked ($999.99) — "bike removed, please re-add your build" |
+| Item price = $0, `_bikeComponent: "true"`, **no** `_parentLineItem` at all | Blocked ($999.99) — not attributable to any build |
+| Item price = $0 with none of the above | Blocked ($999.99) — "cannot be purchased separately" |
 
 ## Tech Stack
 
