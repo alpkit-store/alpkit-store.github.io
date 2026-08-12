@@ -50,6 +50,7 @@ Download fresh Bike Lookup and Variant-to-SKU lookup workbooks each time an impo
 | File                      | Purpose                                      |
 |---------------------------|----------------------------------------------|
 | `matrixify_to_khaos.py`   | Main conversion script                       |
+| `recipients_to_khaos.py`  | Recipient list conversion script (see below) |
 | `khaos_mapping.json`      | Mapping rules, filters, and default values   |
 
 Input/output data files (`Matrixify Export.xlsx`, `khaos_orders.xml`) are excluded from version control via `.gitignore`.
@@ -148,3 +149,54 @@ Bundle-specific note: when a line item's `Line: Properties` contains `_bundle_fr
 Bundle groups already present in Matrixify rows also receive `PACK_SORT_ORDER` values based on `_bundle_id`, with the bundle parent first and then remaining rows in source order.
 
 Bike Build note: when a bike header SKU is present in the Bike Lookup workbook, the exporter adds pack component `ORDER_ITEM` rows from product tags in the format `BB_<SKU>_<qty>`. It also expands `_bundleProduct_<VariantID>: qty` properties on the bike header using the Variant-to-SKU workbook. The bike header receives `PACK_SORT_ORDER=100.001` and generated component rows follow as `100.002`, `100.003`, and so on.
+
+## Recipient list imports (`recipients_to_khaos.py`)
+
+Used for free-of-charge fulfilment runs such as the 100 Mile Club, where the source is a flat recipient list rather than a Matrixify order export. There are no Shopify orders behind these rows: no transactions, prices, shipping lines or order IDs.
+
+```
+python recipients_to_khaos.py --input "100-mile club recipients 20260810 (local).xlsx" --config "khaos_mapping.json" --output-prefix "khaos_orders_100_mile_club" --order-date 2026-08-11
+```
+
+Requires `openpyxl` only (no pandas).
+
+### Input format
+
+One row per recipient per SKU, with these columns on the first worksheet:
+
+`Shipment Ref`, `Tier`, `First name`, `Last name`, `Email`, `Address`, `Address line 2`, `City/Town`, `Post Code`, `Country`, `SKU`, `QTY`
+
+Rows sharing a `Shipment Ref` become a single sales order; repeated SKUs within a shipment are summed.
+
+### Arguments
+
+| Argument | Description |
+|----------|-------------|
+| `--input` | Path to the recipient list `.xlsx` |
+| `--config` | Path to the JSON mapping configuration (only `defaults`, `site_when_no_physical_location` and `standard_invoice_priority` are read) |
+| `--output-prefix` | Output path prefix; one file per tier is written as `<prefix>_<tier>.xml` |
+| `--order-date` | `ORDER_DATE` / `DELIVERY_DATE`, defaults to today |
+| `--site` | `SITE` value, defaults to the config site (`Head Office`) |
+| `--sales-source` | `SALES_SOURCE` value, defaults to the `SITE` value |
+| `--inv-priority` | `INV_PRIORITY` value, defaults to the config standard priority |
+| `--courier` | `COURIER_DESC` value, blank leaves the courier for Khaos Control to set |
+| `--currency` | `ORDER_CURRENCY_CODE` value, defaults to `GBP` |
+| `--order-note-template` | `ORDER_NOTE` template supporting `{tier}`, `{raw_tier}` and `{ref}` |
+
+### Tier splitting
+
+One output file per tier in `TIER_ORDER` (`100-miles`, `50-miles`, `25-miles`). A recipient who qualified for more than one tier (`100-miles + 50-miles`) is filed under the highest tier they reached, with every line item they are owed on that single order.
+
+### Differences from the Matrixify exporter
+
+- `PAYMENTS` is empty and every money field (`ORDER_AMOUNT`, `PRICE_GRS`, `PRICE_NET`, `KSD_DISCOUNT`, `DELIVERY_GRS`, `DELIVERY_TAX`, `WEIGHT`) is zero.
+- `ASSOCIATED_REF` carries the `Shipment Ref` instead of a Shopify order name.
+- Invoice and delivery addresses are both the recipient's home address, and include `IADDRESS2` / `DADDRESS2` for the second address line.
+- `ITEL` / `DTEL` are empty: the recipient list has no phone number.
+
+### Data cleaning and warnings
+
+- Country free text (`UK`, `England`, `Scotland, UK`, `Reino Unido`, …) maps to `GB`; Isle of Man, Jersey and Guernsey map to `IM`, `JE` and `GG`. Anything unrecognised falls back to `GB` and is warned about.
+- Post codes are uppercased and re-spaced before the final three characters.
+- Address fragments coerced to dates by Excel (a Glasgow flat number `4/2` read as `2026-04-02`) are rebuilt as `month/day`.
+- Missing name, email, address, town or post code, and post codes failing UK format validation, are listed in the warning summary. Rows with no Shipment Ref, SKU or a non-positive quantity are skipped and warned about.
