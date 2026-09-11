@@ -1,7 +1,7 @@
 {
   "name": "member-rewards-update-tool",
   "description": "Automates the process of updating used and expired Member Rewards. Also prepares a file to update Klaviyo",
-  "pushedAt": "2026-09-09T15:41:43Z",
+  "pushedAt": "2026-09-10T07:51:26Z",
   "topics": [
     "public-docs"
   ],
