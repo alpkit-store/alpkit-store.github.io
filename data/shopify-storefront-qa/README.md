@@ -71,9 +71,11 @@ browsers, so it uses no Browserbase minutes. iPhone and iPad presets run in Play
 WebKit (Safari's engine), and Android and desktop run in local Chrome. For each device it:
 
 - loads the PDP with an in-stock variant pre-selected, on the live theme or a UAT theme
-- scrolls past the add to basket button and, where the theme pins it (the sticky add to
-  basket A/B arm, at 980px and below), checks the bar sits on the bottom edge, nothing
-  on the page shifts, the button is tappable at five points along it, and the Gorgias
+- where the theme pins the add to basket button (the sticky A/B arm, at 980px and below),
+  scrolls through the pin point 2px at a time, down and back up. It checks the button
+  changes over once each way without jumping, nothing below it shifts anywhere a customer
+  could see, and the empty slot closes up. Scrolled further, it checks the bar sits on
+  the bottom edge, the button is tappable at five points along it, and the Gorgias
   launcher doesn't overlap it
 - taps the real button, confirms the item reaches `/cart.js` and the cart drawer opens,
   records which handler sent the add, then clears the cart
