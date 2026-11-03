@@ -1,7 +1,7 @@
 {
   "name": "members-price",
   "description": "Shopify Function / Metafield / Liquid snippet which outputs a Members price on the PDP and applies a discount at checkout.",
-  "pushedAt": "2026-05-23T07:52:47Z",
+  "pushedAt": "2026-11-03T08:56:01Z",
   "topics": [
     "public-docs"
   ],
