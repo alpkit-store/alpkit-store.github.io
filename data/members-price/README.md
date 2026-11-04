@@ -9,10 +9,10 @@ Three artefacts:
 | Folder | Deliverable |
 |--------|-------------|
 | `metafield-definitions/` | `custom.members_price` (money type) product metafield definition + idempotent install script |
-| `theme-snippet/` | Liquid snippet + SCSS partial + integration doc for `GloandCo/alpkit` |
+| `theme-snippet/` | Liquid snippet + SCSS partial + integration doc for `alpkit` |
 | `discount-function/` | TypeScript Shopify Discount Function (`cart.lines.discounts.generate.run` target) |
 
-Design spec: [`docs/superpowers/specs/2026-04-28-members-price-design.md`](docs/superpowers/specs/2026-04-28-members-price-design.md)
+Design spec: [`docs/superpowers/specs/2026-04-28-members-price-design.md`](Development/Alpkit/members-price/docs/superpowers/specs/2026-04-28-members-price-design.md)powers/specs/2026-04-28-members-price-design.md)
 
 ## Prerequisites
 
@@ -28,11 +28,66 @@ discount; step 5 ships the PDP display. They can be deployed apart.
 
 ### 1. Metafield definition
 
+The legacy in-Admin **Settings → Apps → Develop apps** flow that produced
+`shpat_...` tokens has been removed. Two current paths:
+
+#### 1a. Recommended: Shopify CLI `store auth` + `store execute` (no token file)
+
+Requires Shopify CLI **3.93.0+** (`shopify version` to check; `npm install -g @shopify/cli@latest` to upgrade).
+
 ```bash
-cd metafield-definitions
+shopify store auth --store alpkit-sonder.myshopify.com --scopes write_products
+```
+
+Browser opens; log in and approve. Token is cached in the CLI keychain.
+
+**bash / zsh:**
+
+```bash
+shopify store execute --store alpkit-sonder.myshopify.com --allow-mutations \
+  --query 'mutation CreateMembersPriceDefinition($definition: MetafieldDefinitionInput!) { metafieldDefinitionCreate(definition: $definition) { createdDefinition { id namespace key } userErrors { code field message } } }' \
+  --variables '{"definition":{"name":"Members Price","namespace":"custom","key":"members_price","description":"Member-only price for logged-in customers. Applied at checkout via the Members Price discount function when the product is also tagged members-price.","type":"money","ownerType":"PRODUCT","pin":true,"access":{"storefront":"PUBLIC_READ"}}}'
+```
+
+**PowerShell** (uses single-quoted here-strings — closing `'@` MUST be at column 0):
+
+```powershell
+$query = @'
+mutation CreateMembersPriceDefinition($definition: MetafieldDefinitionInput!) {
+  metafieldDefinitionCreate(definition: $definition) {
+    createdDefinition { id namespace key }
+    userErrors { code field message }
+  }
+}
+'@
+
+$variables = @'
+{"definition":{"name":"Members Price","namespace":"custom","key":"members_price","description":"Member-only price for logged-in customers. Applied at checkout via the Members Price discount function when the product is also tagged members-price.","type":"money","ownerType":"PRODUCT","pin":true,"access":{"storefront":"PUBLIC_READ"}}}
+'@
+
+shopify store execute --store alpkit-sonder.myshopify.com --allow-mutations --query $query --variables $variables
+```
+
+Re-running prints a `TAKEN` userError — harmless, the definition already exists.
+
+#### 1b. Alternative: `install.mjs` script (needs token)
+
+Use when you want the idempotent script behaviour (clean exit 0 on re-run, scripted in CI). Get a token via the [Dev Dashboard](https://shopify.dev/dashboard): create a custom app, add `write_products` scope, install on the store, copy the Admin API access token.
+
+**bash / zsh:**
+
+```bash
 SHOPIFY_STORE=alpkit-sonder \
   SHOPIFY_ADMIN_TOKEN=shpat_... \
-  node install.mjs
+  npm run install-metafield
+```
+
+**PowerShell:**
+
+```powershell
+$env:SHOPIFY_STORE = "alpkit-sonder"
+$env:SHOPIFY_ADMIN_TOKEN = "shpat_..."
+npm run install-metafield
 ```
 
 Re-running is safe — the script logs "exists" and exits 0 if already installed.
@@ -54,22 +109,41 @@ shopify app deploy
 (First-time setup: `shopify app config link` to bind to the existing
 `members-price-discount` app, or `shopify app init` to create one.)
 
+Deploy releases only what is on disk. The live version (members-price-discount-5, 29 Apr 2026) also has a
+UI extension, `members-price-settings`, that isn't in this repo, so deploying from this checkout removes it
+from every store. Add its folder under `discount-function/extensions/` before deploying.
+
 ### 4. Create the automatic discount
 
 In Shopify Admin → Discounts → Create discount → Function-based discount →
 select `members-price-discount` → Save. No expiry, applies to all customers
 (eligibility is enforced inside the Function).
 
+The admin gives the new discount the PRODUCT and ORDER discount classes, and has no setting to change
+them. The Function only returns product discounts, but Shopify still counts ORDER when deciding what
+combines, so codes that don't combine with order discounts (all Member Rewards codes) get refused for
+the whole order. Set it to PRODUCT only straight after creating it:
+
+```powershell
+pwsh -File scripts/Set-MembersPriceProductOnly.ps1 -Store <store>.myshopify.com
+```
+
+It runs as this app (client credentials grant, asks for the client secret from the Dev Dashboard), so
+the store must have approved the app's `write_discounts` scope first: open the app in the admin after
+deploying and accept the new permission.
+
+To stack with Member Rewards codes, the discount also needs the tag `members-price` and, under
+Combinations, product discounts with "Combine on same product with discounts tagged" `member-rewards`.
+
 ### 5. Theme snippet PR
 
 Follow `theme-snippet/INTEGRATION.md`. Five small changes in
-`GloandCo/alpkit`, opened as a PR, merged via the existing auto-deploy
+`alpkit`, opened as a PR, merged via the existing auto-deploy
 workflow.
 
 ## Verification
 
-Run against the live UK store after each deploy step. See
-[design spec §6](docs/superpowers/specs/2026-04-28-members-price-design.md#6-production-verification-checklist)
+Run agains[design spec §6](Development/Alpkit/members-price/docs/superpowers/specs/2026-04-28-members-price-design.md#6-production-verification-checklist)e/docs/superpowers/specs/2026-04-28-members-price-design.md#6-production-verification-checklist)
 for the full 12-item checklist.
 
 ## Rollback
@@ -78,7 +152,7 @@ for the full 12-item checklist.
 |----------|-----|
 | Discount function | Toggle off the automatic discount in Admin (instant, no deploy) |
 | Function code | `shopify app versions list` → `shopify app release --version=<prev>` |
-| Theme snippet | Revert the PR in `GloandCo/alpkit`; auto-deploys |
+| Theme snippet | Revert the PR in `alpkit`; auto-deploys |
 | Metafield definition | Leave in place (harmless). Manual delete via Admin if required |
 | Tag / metafield values | Bulk-clear via Matrixify export → edit → re-import |
 
